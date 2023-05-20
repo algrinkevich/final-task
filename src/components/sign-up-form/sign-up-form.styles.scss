@@ -1,0 +1,38 @@
+.sign-up-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+
+    width: 28.5em;
+    min-height: 27.125em;
+    background-color: #ffffff;
+    border-radius: 0.75em;
+    padding: 1.625em 1.875em 1.4375em 1.9375em;
+    z-index: 2;
+
+    .form-title {
+        color: #000000;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.388889em;
+        margin: 0 0 1.112em 0;
+    }
+    .sign-up-container__input {
+        margin-bottom: 1.429em;
+    }
+    .sign-up-container__button {
+        margin-top: 0.33em;
+    }
+
+    .sign-up-footer {
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 16px;
+        color: #000000;
+        margin-top: 0.67em;
+    }
+
+}

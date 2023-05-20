@@ -1,0 +1,26 @@
+.input-title {
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 19px;
+    color: #2B2B2B;
+    margin-left: 2px;
+}
+
+.input-field {
+    background: #F5F5F5;
+    border-radius: 8px;
+    color: #2B2B2B;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 19px;
+    padding: 15px 14px 14px 14px;
+    outline: none;
+    border: 1px solid transparent;
+    font-family: inherit;
+
+    &::placeholder {
+        font-family: inherit;
+        color: #6C6C6C;
+    }
+}

@@ -2,19 +2,23 @@ import "./button.styles.scss"
 
 export enum ButtonType {
   BASE = "base",
-  BASE_WHITE = "base-white",
+  INITIAL_WHITE = "initial-white",
+  INITIAL_BLUE = "initial-blue",
+}
+
+interface ButtonProps {
+  buttonType: ButtonType
+  children: React.ReactNode
+  styleClasses?: string
 }
 
 const Button = ({
   buttonType = ButtonType.BASE,
   children = null,
-  ...otherProps
-}: {
-  buttonType?: ButtonType
-  children?: React.ReactNode
-}) => {
+  styleClasses,
+}: ButtonProps) => {
   return (
-    <button className={`button-container ${buttonType}`} {...otherProps}>
+    <button className={`button-container ${buttonType} ${styleClasses || ""}`}>
       {children}
     </button>
   )
