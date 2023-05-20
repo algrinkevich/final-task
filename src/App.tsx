@@ -1,12 +1,14 @@
-import "./App.css"
+import { Route, Routes } from "react-router-dom"
 
-import { Fragment } from "react"
+import InitialPage from "../src/pages/initial-page/initial-page.component"
+
+import "./App.css"
 
 const App = () => {
   return (
-    <Fragment>
-      <h1>{"Your final task"}</h1>
-    </Fragment>
+    <Routes>
+      <Route path="/" element={<InitialPage />} />
+    </Routes>
   )
 }
 
