@@ -15,6 +15,10 @@
         }
     },
     "rules": {
+        "semi": [
+            2,
+            "always"
+        ],
         "no-restricted-imports": [
             "error",
             {
@@ -83,6 +87,12 @@
                 "ignore": [
                     "^App\\..*$"
                 ]
+            }
+        ],
+        "prettier/prettier": [
+            "warn",
+            {
+                "semi": true,
             }
         ]
     },
