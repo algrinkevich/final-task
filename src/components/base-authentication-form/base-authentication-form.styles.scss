@@ -1,11 +1,11 @@
-.sign-up-container {
+.form-container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 
     width: 28.5em;
-    min-height: 27.125em;
+    min-height: 21.8125em;
     background-color: #ffffff;
     border-radius: 0.75em;
     padding: 1.625em 1.875em 1.4375em 1.9375em;
@@ -24,7 +24,7 @@
         flex-direction: column;
     }
 
-    .error {
+    input.error {
         border: 2px solid #EC3030;
     }
 
@@ -34,21 +34,19 @@
         font-size: 12px;
         line-height: 12px;
         text-align: left;
-        // position: absolute;
-        // top: 3px;
     }
 
-    .sign-up-container__input {
+    .form-input {
         display: flex;
         flex-direction: column;
         margin-bottom: 1.429em;
     }
 
-    .sign-up-container__button {
+    .form-button {
         margin-top: 0.33em;
     }
 
-    .sign-up-footer {
+    .form-footer {
         font-weight: 400;
         font-size: 12px;
         line-height: 16px;
@@ -56,4 +54,9 @@
         margin-top: 0.67em;
     }
 
+    .redirect-link {
+        color: #000000;
+        font-weight: 700;
+        cursor: pointer;
+    }
 }

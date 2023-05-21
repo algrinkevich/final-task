@@ -5,34 +5,26 @@ import BaseAuthenticationForm from "../../components/base-authentication-form/ba
 import Button, { ButtonType } from "../../components/button/button.component";
 import FormInput from "../../components/form-input/form-input.component";
 
-const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
+const SignInForm = ({ onSignUpClick }: { onSignUpClick: () => void }) => {
   const footerContent = (
     <Fragment>
-      {"Already have an account? "}
-      <a onClick={onLoginClick} className="redirect-link">
-        {"Login"}
-      </a>
+      {"Don’t have an account? "}
+      <a onClick={onSignUpClick} className="redirect-link">{"Sign up"}</a>
     </Fragment>
   );
 
   return (
-    <BaseAuthenticationForm title="Sign up" footerContent={footerContent}>
+    <BaseAuthenticationForm title="Login" footerContent={footerContent}>
       <Formik
-        initialValues={{ email: "", password: "", "confirm-password": "" }}
-        onSubmit={() => alert("Sign Up!")}
+        initialValues={{ email: "", password: "" }}
+        onSubmit={() => alert("Login!!!")}
       >
         {({ errors, touched, values }) => {
           const showEmailError = errors.email && touched.email;
           const showPasswordError = errors.password && touched.password;
 
-          const showConfirmPasswordError =
-            errors["confirm-password"] && touched["confirm-password"];
-
           const isButtonDisabled =
-            Object.keys(errors).length > 0 ||
-            !values.email ||
-            !values.password ||
-            !values["confirm-password"];
+            Object.keys(errors).length > 0 || !values.email || !values.password;
 
           return (
             <Form>
@@ -59,40 +51,21 @@ const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
                   placeholder="Enter your password"
                   title="Password"
                   styleClasses={`${showPasswordError ? "error" : ""}`}
-                  autoComplete="new-password"
+                  autoComplete="current-password"
+                  validate={(value) =>
+                    !value ? "The field is required" : undefined
+                  }
                 />
                 {showPasswordError && (
                   <div className="error-message">{errors.password}</div>
                 )}
               </div>
-              <div className="form-input">
-                <FormInput
-                  type="password"
-                  id="confirm-password"
-                  name="confirm-password"
-                  placeholder="Enter your password again"
-                  title="Repeat Password"
-                  styleClasses={`${showConfirmPasswordError ? "error" : ""}`}
-                  validate={(value) =>
-                    value !== values.password
-                      ? "Passwords do not match"
-                      : undefined
-                  }
-                  autoComplete="new-password"
-                />
-                {showConfirmPasswordError && (
-                  <div className="error-message">
-                    {errors["confirm-password"]}
-                  </div>
-                )}
-              </div>
-
               <Button
                 disabled={isButtonDisabled}
                 buttonType={ButtonType.INITIAL_BLUE}
-                styleClasses="sign-up-container__button"
+                styleClasses="form-button"
               >
-                {"Create Account"}
+                {"Login"}
               </Button>
             </Form>
           );
@@ -102,4 +75,4 @@ const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
   );
 };
 
-export default SignUpForm;
+export default SignInForm;

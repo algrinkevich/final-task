@@ -1,9 +1,17 @@
-import Button, { ButtonType } from "../../components/button/button.component"
-import StartPageBackground from "../../components/start-page-background/start-page-background.component"
+import { useNavigate } from "react-router-dom";
 
-import "./initial-page.styles.scss"
+import Button, { ButtonType } from "../../components/button/button.component";
+import StartPageBackground from "../../components/start-page-background/start-page-background.component";
+
+import "./initial-page.styles.scss";
 
 const InitialPage = () => {
+  const navigate = useNavigate();
+
+  const goToLoginHandler = () => {
+    navigate("/auth");
+  };
+
   return (
     <StartPageBackground>
       <div className="initial-page-container">
@@ -12,10 +20,15 @@ const InitialPage = () => {
           {"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do"}
           {"eiusmod tempor incididunt u"}
         </p>
-        <Button buttonType={ButtonType.INITIAL_WHITE}>{"Login"}</Button>
+        <Button
+          buttonType={ButtonType.INITIAL_WHITE}
+          onClick={goToLoginHandler}
+        >
+          {"Login"}
+        </Button>
       </div>
     </StartPageBackground>
-  )
-}
+  );
+};
 
-export default InitialPage
+export default InitialPage;

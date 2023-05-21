@@ -93,6 +93,7 @@
             "warn",
             {
                 "semi": true,
+                "endOfLine": "auto"
             }
         ]
     },
