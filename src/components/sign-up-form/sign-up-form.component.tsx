@@ -5,11 +5,13 @@ import BaseAuthenticationForm from "../../components/base-authentication-form/ba
 import Button, { ButtonType } from "../../components/button/button.component";
 import FormInput from "../../components/form-input/form-input.component";
 
-const SignUpForm = () => {
+const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
   const footerContent = (
     <Fragment>
       {"Already have an account? "}
-      <strong>{"Login"}</strong>
+      <a onClick={onLoginClick} className="redirect-link">
+        {"Login"}
+      </a>
     </Fragment>
   );
 
