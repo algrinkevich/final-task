@@ -14,30 +14,41 @@
          border-color: #646cff;
      }
 
-    //  &:focus,
-    //  &:focus-visible {
-    //      outline: 4px auto -webkit-focus-ring-color;
-    //  }
+     //  &:focus,
+     //  &:focus-visible {
+     //      outline: 4px auto -webkit-focus-ring-color;
+     //  }
 
      &.initial-white {
-        background-color: #FFFFFF;
-        color: #175BC0;
-        font-size: 12px;
-        line-height: 1.33333em;
-        font-weight: 700;
-        width: fit-content;
-        border-radius: 2em;
-        padding: 1.33333em 5.25em;
+         background-color: #FFFFFF;
+         color: #175BC0;
+         font-size: 12px;
+         line-height: 1.33333em;
+         font-weight: 700;
+         width: fit-content;
+         border-radius: 2em;
+         padding: 1.33333em 5.25em;
      }
+
      &.initial-blue {
-        background-color: #D8E7FF;
-        color: #175BC0;
-        font-size: 12px;
-        line-height: 1.33333em;
-        font-weight: 700;
-        border-radius: 2em;
-        padding-top: 16px;
-        padding-bottom: 16px;
-        border-radius: 12px;
+         background-color: #D8E7FF;
+         color: #175BC0;
+         font-size: 12px;
+         line-height: 1.33333em;
+         font-weight: 700;
+         border-radius: 2em;
+         padding-top: 16px;
+         padding-bottom: 16px;
+         border-radius: 12px;
      }
+
+     &:disabled {
+         background-color: #CFCFCF;
+         color: #FFFFFF;
+     }
+
+     &:disabled:hover {
+         border-color: transparent
+     }
+
  }

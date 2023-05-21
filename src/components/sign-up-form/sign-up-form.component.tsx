@@ -20,6 +20,12 @@ const SignUpForm = () => {
           const showConfirmPasswordError =
             errors["confirm-password"] && touched["confirm-password"];
 
+          const isButtonDisabled =
+            Object.keys(errors).length > 0 ||
+            !values.email ||
+            !values.password ||
+            !values["confirm-password"];
+
           return (
             <Form>
               <div className="sign-up-container__input">
@@ -30,6 +36,7 @@ const SignUpForm = () => {
                   placeholder="Enter your email"
                   title="Email"
                   styleClasses={`${showEmailError ? "error" : ""}`}
+                  autoComplete="email"
                 />
                 {showEmailError && (
                   <div className="error-message">{errors.email}</div>
@@ -44,6 +51,7 @@ const SignUpForm = () => {
                   placeholder="Enter your password"
                   title="Password"
                   styleClasses={`${showPasswordError ? "error" : ""}`}
+                  autoComplete="new-password"
                 />
                 {showPasswordError && (
                   <div className="error-message">{errors.password}</div>
@@ -62,6 +70,7 @@ const SignUpForm = () => {
                       ? "Passwords do not match"
                       : undefined
                   }
+                  autoComplete="new-password"
                 />
                 {showConfirmPasswordError && (
                   <div className="error-message">
@@ -71,6 +80,7 @@ const SignUpForm = () => {
               </div>
 
               <Button
+                disabled={isButtonDisabled}
                 buttonType={ButtonType.INITIAL_BLUE}
                 styleClasses="sign-up-container__button"
               >
