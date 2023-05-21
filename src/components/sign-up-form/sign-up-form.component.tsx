@@ -1,14 +1,27 @@
+import { Fragment } from "react";
 import { Form, Formik } from "formik";
 
+import BaseAuthenticationForm from "../../components/base-authentication-form/base-authentication-form.component";
 import Button, { ButtonType } from "../../components/button/button.component";
 import FormInput from "../../components/form-input/form-input.component";
 
 import "./sign-up-form.styles.scss";
 
 const SignUpForm = () => {
+  const footerContent = (
+    <Fragment>
+      {'"Already have an account?" '}
+      <strong>{"Login"}</strong>
+    </Fragment>
+  );
+
   return (
-    <div className="sign-up-container">
-      <h2 className="form-title">{"Sign up"}</h2>
+    <BaseAuthenticationForm
+      title="Sign up"
+      footerContent={footerContent}
+      styleClasses="sign-up-container"
+    >
+      {/* <div className="abc"> */}
       <Formik
         initialValues={{ email: "", password: "", "confirm-password": "" }}
         onSubmit={() => alert("Hiiii!")}
@@ -90,12 +103,8 @@ const SignUpForm = () => {
           );
         }}
       </Formik>
-
-      <span className="sign-up-footer">
-        {"Already have an account? "}
-        <strong>{"Login"}</strong>
-      </span>
-    </div>
+      {/* </div> */}
+    </BaseAuthenticationForm>
   );
 };
 

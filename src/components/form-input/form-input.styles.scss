@@ -25,15 +25,15 @@
         color: #6C6C6C;
     }
 
-    &:focus {
-        border: 2px solid #3C86F4;
-        background-color: #ffffff;
-    }
-
     &:not(:placeholder-shown) {
         background-color: #ffffff;
         border: 1px solid #9F9F9F;
     }
 
- 
+    &:focus {
+        border: 2px solid #3C86F4;
+        background-color: #ffffff;
+    }
+
+    
 }

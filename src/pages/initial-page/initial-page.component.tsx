@@ -1,7 +1,7 @@
-import Button, { ButtonType } from "../../components/button/button.component"
-import StartPageBackground from "../../components/start-page-background/start-page-background.component"
+import Button, { ButtonType } from "../../components/button/button.component";
+import StartPageBackground from "../../components/start-page-background/start-page-background.component";
 
-import "./initial-page.styles.scss"
+import "./initial-page.styles.scss";
 
 const InitialPage = () => {
   return (
@@ -15,7 +15,7 @@ const InitialPage = () => {
         <Button buttonType={ButtonType.INITIAL_WHITE}>{"Login"}</Button>
       </div>
     </StartPageBackground>
-  )
-}
+  );
+};
 
-export default InitialPage
+export default InitialPage;

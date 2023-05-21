@@ -1,7 +1,7 @@
-import "./start-page-background.scss"
+import "./start-page-background.scss";
 
 const StartPageBackground = ({ children }: { children: React.ReactNode }) => {
-  return <div className="start-page-background">{children}</div>
-}
+  return <div className="start-page-background">{children}</div>;
+};
 
-export default StartPageBackground
+export default StartPageBackground;
