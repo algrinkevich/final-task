@@ -16,11 +16,24 @@
     line-height: 19px;
     padding: 15px 14px 14px 14px;
     outline: none;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
     font-family: inherit;
+    margin-bottom: 4px;
 
     &::placeholder {
         font-family: inherit;
         color: #6C6C6C;
     }
+
+    &:focus {
+        border: 2px solid #3C86F4;
+        background-color: #ffffff;
+    }
+
+    &:not(:placeholder-shown) {
+        background-color: #ffffff;
+        border: 1px solid #9F9F9F;
+    }
+
+ 
 }
