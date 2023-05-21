@@ -5,7 +5,7 @@
     transform: translate(-50%, -50%);
 
     width: 28.5em;
-    min-height: 27.125em;
+    min-height: 21.8125em;
     background-color: #ffffff;
     border-radius: 0.75em;
     padding: 1.625em 1.875em 1.4375em 1.9375em;
@@ -19,6 +19,33 @@
         margin: 0 0 1.112em 0;
     }
 
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    input.error {
+        border: 2px solid #EC3030;
+    }
+
+    .error-message {
+        color: #EC3030;
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 12px;
+        text-align: left;
+    }
+
+    .form-input {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1.429em;
+    }
+
+    .form-button {
+        margin-top: 0.33em;
+    }
+
     .form-footer {
         font-weight: 400;
         font-size: 12px;
@@ -26,5 +53,4 @@
         color: #000000;
         margin-top: 0.67em;
     }
-
 }

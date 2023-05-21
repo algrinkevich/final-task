@@ -4,15 +4,15 @@ const BaseAuthenticationForm = ({
   children,
   footerContent,
   title,
-  styleClasses
+  styleClasses,
 }: {
   children: React.ReactNode;
   footerContent: React.ReactNode;
   title: string;
-  styleClasses: string
+  styleClasses?: string;
 }) => {
   return (
-    <div className={`form-container ${styleClasses}`}>
+    <div className={`form-container ${styleClasses || ""}`}>
       <h2 className="form-title">{title}</h2>
       {children}
       <span className="form-footer">{footerContent}</span>

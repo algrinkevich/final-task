@@ -7,8 +7,8 @@ import "./authentication.styles.scss";
 const Authentication = () => {
   return (
     <StartPageBackground>
-      <SignUpForm />
-      {/* <SignInForm /> */}
+      {/* <SignUpForm /> */}
+      <SignInForm />
     </StartPageBackground>
   );
 };

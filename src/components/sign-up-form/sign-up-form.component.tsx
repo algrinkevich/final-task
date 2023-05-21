@@ -5,26 +5,19 @@ import BaseAuthenticationForm from "../../components/base-authentication-form/ba
 import Button, { ButtonType } from "../../components/button/button.component";
 import FormInput from "../../components/form-input/form-input.component";
 
-import "./sign-up-form.styles.scss";
-
 const SignUpForm = () => {
   const footerContent = (
     <Fragment>
-      {'"Already have an account?" '}
+      {"Already have an account? "}
       <strong>{"Login"}</strong>
     </Fragment>
   );
 
   return (
-    <BaseAuthenticationForm
-      title="Sign up"
-      footerContent={footerContent}
-      styleClasses="sign-up-container"
-    >
-      {/* <div className="abc"> */}
+    <BaseAuthenticationForm title="Sign up" footerContent={footerContent}>
       <Formik
         initialValues={{ email: "", password: "", "confirm-password": "" }}
-        onSubmit={() => alert("Hiiii!")}
+        onSubmit={() => alert("Sign Up!")}
       >
         {({ errors, touched, values }) => {
           const showEmailError = errors.email && touched.email;
@@ -41,7 +34,7 @@ const SignUpForm = () => {
 
           return (
             <Form>
-              <div className="sign-up-container__input">
+              <div className="form-input">
                 <FormInput
                   type="email"
                   id="email"
@@ -56,7 +49,7 @@ const SignUpForm = () => {
                 )}
               </div>
 
-              <div className="sign-up-container__input">
+              <div className="form-input">
                 <FormInput
                   type="password"
                   id="password"
@@ -70,7 +63,7 @@ const SignUpForm = () => {
                   <div className="error-message">{errors.password}</div>
                 )}
               </div>
-              <div className="sign-up-container__input">
+              <div className="form-input">
                 <FormInput
                   type="password"
                   id="confirm-password"
@@ -103,7 +96,6 @@ const SignUpForm = () => {
           );
         }}
       </Formik>
-      {/* </div> */}
     </BaseAuthenticationForm>
   );
 };

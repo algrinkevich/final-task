@@ -31,7 +31,7 @@ function validatePassword(value: string) {
   let error;
 
   if (!value) {
-    error = "Required";
+    error = "The field is required";
   } else if (value.length < 6) {
     error = "Minimum number of characters should be 6";
   } else if (value.search(/[a-z]/) === -1) {
@@ -66,7 +66,7 @@ const FormInput = ({
       </label>
       <Field
         type={type}
-        className={`input-field ${styleClasses || ""}`}
+        className={`${styleClasses || ""} input-field`}
         id={id}
         name={name}
         placeholder={placeholder}
