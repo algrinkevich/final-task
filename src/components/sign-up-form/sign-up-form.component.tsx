@@ -11,9 +11,7 @@ import {
 import BaseAuthenticationForm from "../../components/base-authentication-form/base-authentication-form.component";
 import Button, { ButtonType } from "../../components/button/button.component";
 import FormInput from "../../components/form-input/form-input.component";
-import {
-  createAuthUserWithEmailAndPasswordAsync,
-} from "../../utils/firebase/firebase.utils";
+import { createAuthUserWithEmailAndPasswordAsync } from "../../utils/firebase/firebase.utils";
 
 interface SignUpData {
   email: string;
@@ -39,9 +37,6 @@ const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
         values.email,
         values.password
       );
-
-      console.log("signed up user", user);
-
     } catch (error) {
       const authError = error as AuthError;
 
@@ -54,7 +49,6 @@ const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
         setFieldError("email", " ");
         setSubmitting(false);
       } else {
-        console.log("User creation encountered an error", error);
         setFieldError("backendError", "Unexpected error");
         setSubmitting(false);
       }

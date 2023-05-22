@@ -1,17 +1,42 @@
-import { Route, Routes } from "react-router-dom"
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { User } from "firebase/auth";
 
-import Authentication from "../src/pages/authentication/authentication.component"
-import InitialPage from "../src/pages/initial-page/initial-page.component"
+import Authentication from "../src/pages/authentication/authentication.component";
+import InitialPage from "../src/pages/initial-page/initial-page.component";
+import SearchPage from "../src/pages/search-page/search-page.component";
+import { setCurrentUser } from "./store/user/user.slice";
+import { onAuthStateChangedListener } from "./utils/firebase/firebase.utils";
 
-import "./App.css"
+import "./App.css";
 
 const App = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const unsubcribe = onAuthStateChangedListener((user: User | null) => {
+      dispatch(setCurrentUser(user));
+
+      if (user) {
+        navigate("/search");
+      } else if (location.pathname !== "/") {
+        navigate("/auth");
+      }
+    });
+
+    return unsubcribe;
+  }, [dispatch, navigate, location]);
+
   return (
     <Routes>
       <Route path="/" element={<InitialPage />} />
       <Route path="auth" element={<Authentication />} />
+      <Route path="search" element={<SearchPage />} />
     </Routes>
-  )
-}
+  );
+};
 
-export default App
+export default App;
