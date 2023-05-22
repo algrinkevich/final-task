@@ -1,16 +1,64 @@
 import { Fragment } from "react";
-import { Form, Formik } from "formik";
+import { AuthError } from "firebase/auth";
+import {
+  Form,
+  Formik,
+  FormikErrors,
+  FormikHelpers,
+  FormikTouched,
+} from "formik";
 
 import BaseAuthenticationForm from "../../components/base-authentication-form/base-authentication-form.component";
 import Button, { ButtonType } from "../../components/button/button.component";
 import FormInput from "../../components/form-input/form-input.component";
+import { signInAuthUserWithEmailAndPasswordAsync } from "../../utils/firebase/firebase.utils";
 
-const defaultFormFields = {
+interface SignInData {
+  email: string;
+  password: string;
+  backendError?: string;
+}
+
+const defaultFormFields: SignInData = {
   email: "",
   password: "",
+  backendError: "",
 };
 
 const SignInForm = ({ onSignUpClick }: { onSignUpClick: () => void }) => {
+  const handleSubmitAsync = async (
+    values: SignInData,
+    { setSubmitting, setFieldError }: FormikHelpers<SignInData>
+  ) => {
+    try {
+      const response = await signInAuthUserWithEmailAndPasswordAsync(
+        values.email,
+        values.password
+      );
+    } catch (error) {
+      const authError = error as AuthError;
+
+      switch (authError.code) {
+        case "auth/wrong-password":
+          setFieldError("backendError", "Incorrect password for such email");
+          setFieldError("password", " ");
+          setSubmitting(false);
+          break;
+        case "auth/user-not-found":
+          setFieldError(
+            "backendError",
+            "No such user associated with this email"
+          );
+          setFieldError("email", " ");
+          setSubmitting(false);
+          break;
+        default:
+          setFieldError("backendError", "Unexpected error");
+          setSubmitting(false);
+      }
+    }
+  };
+
   const footerContent = (
     <Fragment>
       {"Don’t have an account? "}
@@ -22,11 +70,16 @@ const SignInForm = ({ onSignUpClick }: { onSignUpClick: () => void }) => {
 
   return (
     <BaseAuthenticationForm title="Login" footerContent={footerContent}>
-      <Formik
-        initialValues={{ email: "", password: "" }}
-        onSubmit={() => alert("Login!!!")}
-      >
-        {({ errors, touched, values }) => {
+      <Formik initialValues={defaultFormFields} onSubmit={handleSubmitAsync}>
+        {({
+          errors,
+          touched,
+          values,
+        }: {
+          errors: FormikErrors<SignInData>;
+          touched: FormikTouched<SignInData>;
+          values: SignInData;
+        }) => {
           const showEmailError = errors.email && touched.email;
           const showPasswordError = errors.password && touched.password;
 
@@ -67,6 +120,11 @@ const SignInForm = ({ onSignUpClick }: { onSignUpClick: () => void }) => {
                   <div className="error-message">{errors.password}</div>
                 )}
               </div>
+              {errors.backendError && (
+                <div className="server-error-message">
+                  {errors.backendError}
+                </div>
+              )}
               <Button
                 disabled={isButtonDisabled}
                 buttonType={ButtonType.INITIAL_BLUE}
