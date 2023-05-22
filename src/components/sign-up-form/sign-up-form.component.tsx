@@ -1,11 +1,66 @@
 import { Fragment } from "react";
-import { Form, Formik } from "formik";
+import { AuthError } from "firebase/auth";
+import {
+  Form,
+  Formik,
+  FormikErrors,
+  FormikHelpers,
+  FormikTouched,
+} from "formik";
 
 import BaseAuthenticationForm from "../../components/base-authentication-form/base-authentication-form.component";
 import Button, { ButtonType } from "../../components/button/button.component";
 import FormInput from "../../components/form-input/form-input.component";
+import {
+  createAuthUserWithEmailAndPasswordAsync,
+} from "../../utils/firebase/firebase.utils";
+
+interface SignUpData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  backendError?: string;
+}
+
+const defaultFormFields: SignUpData = {
+  email: "",
+  password: "",
+  confirmPassword: "",
+  backendError: "",
+};
 
 const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
+  const handleSubmitAsync = async (
+    values: SignUpData,
+    { setSubmitting, setFieldError }: FormikHelpers<SignUpData>
+  ) => {
+    try {
+      const user = await createAuthUserWithEmailAndPasswordAsync(
+        values.email,
+        values.password
+      );
+
+      console.log("signed up user", user);
+
+    } catch (error) {
+      const authError = error as AuthError;
+
+      if (authError.code === "auth/email-already-in-use") {
+        setFieldError(
+          "backendError",
+          "Cannot create user, email already in use"
+        );
+        //Empty space needs to emulate error
+        setFieldError("email", " ");
+        setSubmitting(false);
+      } else {
+        console.log("User creation encountered an error", error);
+        setFieldError("backendError", "Unexpected error");
+        setSubmitting(false);
+      }
+    }
+  };
+
   const footerContent = (
     <Fragment>
       {"Already have an account? "}
@@ -17,22 +72,27 @@ const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
 
   return (
     <BaseAuthenticationForm title="Sign up" footerContent={footerContent}>
-      <Formik
-        initialValues={{ email: "", password: "", "confirm-password": "" }}
-        onSubmit={() => alert("Sign Up!")}
-      >
-        {({ errors, touched, values }) => {
+      <Formik initialValues={defaultFormFields} onSubmit={handleSubmitAsync}>
+        {({
+          errors,
+          touched,
+          values,
+        }: {
+          errors: FormikErrors<SignUpData>;
+          touched: FormikTouched<SignUpData>;
+          values: SignUpData;
+        }) => {
           const showEmailError = errors.email && touched.email;
           const showPasswordError = errors.password && touched.password;
 
           const showConfirmPasswordError =
-            errors["confirm-password"] && touched["confirm-password"];
+            errors.confirmPassword && touched.confirmPassword;
 
           const isButtonDisabled =
             Object.keys(errors).length > 0 ||
             !values.email ||
             !values.password ||
-            !values["confirm-password"];
+            !values.confirmPassword;
 
           return (
             <Form>
@@ -68,8 +128,8 @@ const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
               <div className="form-input">
                 <FormInput
                   type="password"
-                  id="confirm-password"
-                  name="confirm-password"
+                  id="confirmPassword"
+                  name="confirmPassword"
                   placeholder="Enter your password again"
                   title="Repeat Password"
                   styleClasses={`${showConfirmPasswordError ? "error" : ""}`}
@@ -81,11 +141,14 @@ const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
                   autoComplete="new-password"
                 />
                 {showConfirmPasswordError && (
-                  <div className="error-message">
-                    {errors["confirm-password"]}
-                  </div>
+                  <div className="error-message">{errors.confirmPassword}</div>
                 )}
               </div>
+              {errors.backendError && (
+                <div className="server-error-message">
+                  {errors.backendError}
+                </div>
+              )}
 
               <Button
                 disabled={isButtonDisabled}

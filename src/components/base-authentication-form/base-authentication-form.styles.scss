@@ -36,6 +36,15 @@
         text-align: left;
     }
 
+    .server-error-message {
+        color: #EC3030;
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 12px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
     .form-input {
         display: flex;
         flex-direction: column;
