@@ -6,7 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { store } from "../src/store/store.tsx";
 import App from "./App.tsx";
 
-import "./index.css";
+import "./index.scss";
 
 ReactDOM.createRoot(document.querySelector("#root") as HTMLElement).render(
   <React.StrictMode>
