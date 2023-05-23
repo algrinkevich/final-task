@@ -1,17 +1,24 @@
  .button-container {
      border-radius: 8px;
      border: 1px solid transparent;
-     padding: 0.6em 1.2em;
-     font-size: 1em;
-     font-weight: 500;
+     font-size: 14px;
+     font-weight: 600;
      font-family: inherit;
      cursor: pointer;
-     transition: border-color 0.25s;
-     background: rgba(60, 134, 244, 0.2);
+     transition: background-color 0.25s;
+     background-color: rgba(60, 134, 244, 0.2);
      color: #3C86F4;
+     line-height: 1.357em;
 
-     &:hover {
-         border-color: #646cff;
+     &:hover,
+     &.initial-white:hover,
+     &.initial-blue:hover {
+         background-color: #3C86F4;
+         color: #FFFFFF;
+     }
+
+     svg:hover {
+         fill: #FFFFFF;
      }
 
      //  &:focus,
@@ -42,13 +49,19 @@
          border-radius: 12px;
      }
 
-     &:disabled {
+     &.filters-btn {
+         width: 2.5rem;
+         height: 2.5rem;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         flex-shrink: 0;
+         padding: 0;
+     }
+
+     &:disabled,
+     &:disabled:hover {
          background-color: #CFCFCF;
          color: #FFFFFF;
      }
-
-     &:disabled:hover {
-         border-color: transparent
-     }
-
  }
