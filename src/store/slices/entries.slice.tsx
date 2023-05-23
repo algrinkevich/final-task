@@ -7,7 +7,7 @@ interface EntriesState {
 }
 
 const INITIAL_STATE: EntriesState = {
-  items: [],
+  items: [1],
 };
 
 export const entriesSlice = createSlice({

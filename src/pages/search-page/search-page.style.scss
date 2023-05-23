@@ -55,3 +55,25 @@
         text-align: center;
     }
 }
+
+
+.rdt_Table {
+    .rdt_TableRow:not(:last-of-type) {
+        border-bottom: none;
+    }
+    .rdt_TableHeadRow {
+        border-bottom: none;
+        min-height: 40px;
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 16px;
+        color: #000000;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+    }
+
+    .rdt_TableCol_Sortable svg {
+        opacity: 100% !important;
+    }
+
+}
