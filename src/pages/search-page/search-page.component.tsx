@@ -5,54 +5,69 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReactComponent as FiltersIcon } from "../../assets/filters.svg";
 import { ReactComponent as SortIcon } from "../../assets/sortIcon.svg";
 import Button, { ButtonType } from "../../components/button/button.component";
-import { fetchItems, selectItems } from "../../store/slices/entries.slice";
+import {
+  fetchItems,
+  SearchItem,
+  selectItems,
+} from "../../store/slices/entries.slice";
 import { AppDispatch } from "../../store/store";
 
 import "./search-page.style.scss";
 
-interface DataRow {
-  number: number;
-  entry: string;
-  entryNames: string;
-}
+// interface DataRow {
+//   number: number;
+//   entry: string;
+//   entryNames: string;
+//   genes: string;
+//   organism: string;
+//   subcellularLocation: string;
+//   length: number;
+// }
 
 const SearchPage = () => {
   const items = useSelector(selectItems);
   const dispatch = useDispatch<AppDispatch>();
 
-  const columns: TableColumn<DataRow>[] = [
+  const columns: TableColumn<SearchItem>[] = [
     {
       name: "#",
-      selector: (row: DataRow) => row.number,
+      selector: (row) => row.index,
     },
     {
       name: "Entry",
-      selector: (row: DataRow) => row.entry,
+      selector: (row) => row.id,
       sortable: true,
     },
     {
       name: "Entry Names",
-      selector: (row: DataRow) => row.entryNames,
+      selector: (row) => row.accession,
+      sortable: true,
+    },
+    {
+      name: "Genes",
+      selector: (row) => row.geneNames.join(", "),
+      sortable: true,
+    },
+    {
+      name: "Organism",
+      selector: (row) => row.organismName,
+      sortable: true,
+    },
+    {
+      name: "Subcellular Location",
+      selector: (row) => row.ccSubcellularLocation.join(", "),
+      sortable: true,
+    },
+    {
+      name: "Length",
+      selector: (row) => row.length,
       sortable: true,
     },
   ];
 
-  const data = [
-    {
-      number: 1,
-      entry: "Beetlejuice",
-      entryNames: "1988",
-    },
-    {
-      number: 2,
-      entry: "Cool",
-      entryNames: "1955",
-    },
-  ];
-
-  // useEffect(() => {
-  //   dispatch(fetchItems());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchItems());
+  }, [dispatch]);
 
   return (
     <div className="search-page-container">
@@ -69,11 +84,12 @@ const SearchPage = () => {
           <FiltersIcon />
         </Button>
       </div>
+      <p className="results-title">{`${items.length} Search Results for "Cancer"`}</p>
       {items.length > 0 ? (
         //JSON.stringify(items)
         <DataTable
           columns={columns}
-          data={data}
+          data={items}
           sortIcon={<SortIcon className="icon" />}
         />
       ) : (
