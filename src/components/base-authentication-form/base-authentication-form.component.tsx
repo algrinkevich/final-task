@@ -15,7 +15,7 @@ const BaseAuthenticationForm = ({
     <div className={`form-container ${styleClasses || ""}`}>
       <h2 className="form-title">{title}</h2>
       {children}
-      <span className="form-footer">{footerContent}</span>
+      <div className="form-footer">{footerContent}</div>
     </div>
   );
 };

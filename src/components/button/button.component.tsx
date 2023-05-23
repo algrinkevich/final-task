@@ -6,6 +6,7 @@ export enum ButtonType {
   BASE = "base",
   INITIAL_WHITE = "initial-white",
   INITIAL_BLUE = "initial-blue",
+  FILTERS = "filters-btn",
 }
 
 interface ButtonProps extends ComponentProps<"button"> {

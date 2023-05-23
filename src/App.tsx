@@ -4,12 +4,13 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { User } from "firebase/auth";
 
 import Authentication from "../src/pages/authentication/authentication.component";
-import InitialPage from "../src/pages/initial-page/initial-page.component";
-import SearchPage from "../src/pages/search-page/search-page.component";
+import Header from "./pages/header/header.component";
+import InitialPage from "./pages/initial-page/initial-page.component";
+import SearchPage from "./pages/search-page/search-page.component";
 import { setCurrentUser } from "./store/user/user.slice";
 import { onAuthStateChangedListener } from "./utils/firebase/firebase.utils";
 
-import "./App.css";
+import "./App.scss";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -34,7 +35,9 @@ const App = () => {
     <Routes>
       <Route path="/" element={<InitialPage />} />
       <Route path="auth" element={<Authentication />} />
-      <Route path="search" element={<SearchPage />} />
+      <Route path="search" element={<Header />}>
+        <Route index element={<SearchPage />} />
+      </Route>
     </Routes>
   );
 };

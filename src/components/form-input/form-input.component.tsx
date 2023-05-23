@@ -17,11 +17,11 @@ function validateEmail(value: string) {
   let error;
 
   if (!value) {
-    error = "Required";
+    error = "The field is required";
   } else if (!/^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,4}$/i.test(value)) {
     error = "Invalid email address";
   } else if (value.length >= 128) {
-    error = "Email is too long";
+    error = "The email is too long";
   }
 
   return error;

@@ -1,24 +1,28 @@
-import { useSelector } from "react-redux";
-
-import { selectCurrentUser } from "../../store/user/user.selector";
-import { signOutUserAsync } from "../../utils/firebase/firebase.utils";
+import { ReactComponent as FiltersIcon } from "../../assets/filters.svg";
+import Button, { ButtonType } from "../../components/button/button.component";
 
 import "./search-page.style.scss";
 
 const SearchPage = () => {
-  const currentUser = useSelector(selectCurrentUser);
-
-  console.log("User", currentUser?.email);
-
   return (
-    <div>
-      <span>{"Search Page"}</span>
-      <br />
-      {currentUser ? (
-        <a onClick={signOutUserAsync}>{"Sign out"}</a>
-      ) : (
-        <h1>{"No user"}</h1>
-      )}
+    <div className="search-page-container">
+      <div className="search-page-header">
+        <input
+          type="search"
+          className="input-search"
+          placeholder="Enter search value"
+        />
+        <Button buttonType={ButtonType.BASE} styleClasses="search-btn">
+          {"Search"}
+        </Button>
+        <Button buttonType={ButtonType.FILTERS}>
+          <FiltersIcon />
+        </Button>
+      </div>
+      <p className="no-data-placeholder">
+        {"No data to display"}
+        <br /> {"Please start search to display results"}
+      </p>
     </div>
   );
 };
