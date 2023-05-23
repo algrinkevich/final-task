@@ -7,7 +7,7 @@ import Authentication from "../src/pages/authentication/authentication.component
 import Header from "./pages/header/header.component";
 import InitialPage from "./pages/initial-page/initial-page.component";
 import SearchPage from "./pages/search-page/search-page.component";
-import { setCurrentUser } from "./store/user/user.slice";
+import { setCurrentUser } from "./store/slices/user.slice";
 import { onAuthStateChangedListener } from "./utils/firebase/firebase.utils";
 
 import "./App.scss";
