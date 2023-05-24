@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { User } from "firebase/auth";
+//import { User } from "firebase/auth";
 
 import { RootState } from "../store";
 
 interface UserState {
-  currentUser: User | null;
+  currentUser: {
+    email: string;
+  } | null;
 }
 
 const INITIAL_STATE: UserState = {

@@ -17,13 +17,14 @@ const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+
   useEffect(() => {
     const unsubcribe = onAuthStateChangedListener((user: User | null) => {
-      dispatch(setCurrentUser(user));
+      dispatch(setCurrentUser({ email: user?.email }));
 
-      if (user) {
+      if (user && ["/", "/auth"].includes(location.pathname)) {
         navigate("/search");
-      } else if (location.pathname !== "/") {
+      } else if (!user && location.pathname !== "/") {
         navigate("/auth");
       }
     });

@@ -129,6 +129,7 @@ const SignInForm = ({ onSignUpClick }: { onSignUpClick: () => void }) => {
                 disabled={isButtonDisabled}
                 buttonType={ButtonType.INITIAL_BLUE}
                 styleClasses="form-button"
+                type="submit"
               >
                 {"Login"}
               </Button>
