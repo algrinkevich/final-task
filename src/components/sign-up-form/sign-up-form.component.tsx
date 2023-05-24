@@ -148,6 +148,7 @@ const SignUpForm = ({ onLoginClick }: { onLoginClick: () => void }) => {
                 disabled={isButtonDisabled}
                 buttonType={ButtonType.INITIAL_BLUE}
                 styleClasses="sign-up-container__button"
+                type="submit"
               >
                 {"Create Account"}
               </Button>
