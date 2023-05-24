@@ -42,7 +42,9 @@ const SignUpFormBase = ({
     errors.confirmPassword && touched.confirmPassword;
 
   const isButtonDisabled =
-    Object.keys(errors).length > 0 ||
+    !!errors.email ||
+    !!errors.password ||
+    !!errors.confirmPassword ||
     !values.email ||
     !values.password ||
     !values.confirmPassword;
@@ -100,9 +102,6 @@ const SignUpFormBase = ({
             placeholder="Enter your password again"
             title="Repeat Password"
             styleClasses={`${showConfirmPasswordError ? "error" : ""}`}
-            validate={(value) =>
-              value !== values.password ? "Passwords do not match" : undefined
-            }
             autoComplete="new-password"
             onChange={handleChange}
             onBlur={handleBlur}
@@ -128,7 +127,7 @@ const SignUpFormBase = ({
   );
 };
 
-function validateEmail(value: string) {
+export function validateEmail(value: string) {
   let error;
 
   if (!value) {
@@ -171,7 +170,11 @@ const SignUpForm = withFormik<SignUpFormProps, SignUpData>({
           : null,
     };
 
-    return errors;
+    const cleanedUpErrors = Object.fromEntries(
+      Object.entries(errors).filter(([_, v]) => !!v)
+    );
+
+    return cleanedUpErrors;
   },
   // eslint-disable-next-line no-restricted-syntax
   handleSubmit: async (values, { setSubmitting, setFieldError }) => {

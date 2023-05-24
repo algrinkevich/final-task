@@ -1,17 +1,12 @@
 import { Fragment } from "react";
 import { AuthError } from "firebase/auth";
-import {
-  Form,
-  Formik,
-  FormikErrors,
-  FormikHelpers,
-  FormikTouched,
-} from "formik";
+import { FormikErrors, FormikTouched, withFormik } from "formik";
 
 import BaseAuthenticationForm from "../../components/base-authentication-form/base-authentication-form.component";
 import Button, { ButtonType } from "../../components/button/button.component";
 import FormInput from "../../components/form-input/form-input.component";
 import { signInAuthUserWithEmailAndPasswordAsync } from "../../utils/firebase/firebase.utils";
+import { validateEmail } from "../sign-up-form/sign-up-form.component";
 
 interface SignInData {
   email: string;
@@ -19,19 +14,114 @@ interface SignInData {
   backendError?: string;
 }
 
-const defaultFormFields: SignInData = {
-  email: "",
-  password: "",
-  backendError: "",
+interface SignInFormProps {
+  onSignUpClick: () => void;
+}
+
+const SignInFormBase = ({
+  values,
+  touched,
+  errors,
+  handleChange,
+  handleBlur,
+  handleSubmit,
+  onSignUpClick,
+}: {
+  errors: FormikErrors<SignInData>;
+  touched: FormikTouched<SignInData>;
+  values: SignInData;
+  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onSignUpClick: () => void;
+}) => {
+  const showEmailError = errors.email && touched.email;
+  const showPasswordError = errors.password && touched.password;
+
+  const isButtonDisabled =
+    !!errors.email || !!errors.password || !values.email || !values.password;
+
+  const footerContent = (
+    <Fragment>
+      {"Don’t have an account? "}
+      <a onClick={onSignUpClick} className="redirect-link">
+        {"Sign up"}
+      </a>
+    </Fragment>
+  );
+
+  return (
+    <BaseAuthenticationForm title="Login" footerContent={footerContent}>
+      <form onSubmit={handleSubmit}>
+        <div className="form-input">
+          <FormInput
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            title="Email"
+            styleClasses={`${showEmailError ? "error" : ""}`}
+            autoComplete="email"
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          {showEmailError && (
+            <div className="error-message">{errors.email}</div>
+          )}
+        </div>
+
+        <div className="form-input">
+          <FormInput
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            title="Password"
+            styleClasses={`${showPasswordError ? "error" : ""}`}
+            autoComplete="current-password"
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          {showPasswordError && (
+            <div className="error-message">{errors.password}</div>
+          )}
+        </div>
+        {errors.backendError && (
+          <div className="server-error-message">{errors.backendError}</div>
+        )}
+        <Button
+          disabled={isButtonDisabled}
+          buttonType={ButtonType.INITIAL_BLUE}
+          styleClasses="form-button"
+          type="submit"
+        >
+          {"Login"}
+        </Button>
+      </form>
+    </BaseAuthenticationForm>
+  );
 };
 
-const SignInForm = ({ onSignUpClick }: { onSignUpClick: () => void }) => {
-  const handleSubmitAsync = async (
-    values: SignInData,
-    { setSubmitting, setFieldError }: FormikHelpers<SignInData>
-  ) => {
+
+
+const SignInForm = withFormik<SignInFormProps, SignInData>({
+  validate: (values: SignInData) => {
+    const errors = {
+      email: validateEmail(values.email),
+      password: !values.password ? "The field is required" : null,
+    };
+
+    const cleanedUpErrors = Object.fromEntries(
+      Object.entries(errors).filter(([_, v]) => !!v)
+    );
+
+    return cleanedUpErrors;
+  },
+
+  // eslint-disable-next-line no-restricted-syntax
+  handleSubmit: async (values, { setSubmitting, setFieldError }) => {
     try {
-      const response = await signInAuthUserWithEmailAndPasswordAsync(
+      await signInAuthUserWithEmailAndPasswordAsync(
         values.email,
         values.password
       );
@@ -57,88 +147,7 @@ const SignInForm = ({ onSignUpClick }: { onSignUpClick: () => void }) => {
           setSubmitting(false);
       }
     }
-  };
-
-  const footerContent = (
-    <Fragment>
-      {"Don’t have an account? "}
-      <a onClick={onSignUpClick} className="redirect-link">
-        {"Sign up"}
-      </a>
-    </Fragment>
-  );
-
-  return (
-    <BaseAuthenticationForm title="Login" footerContent={footerContent}>
-      <Formik initialValues={defaultFormFields} onSubmit={handleSubmitAsync}>
-        {({
-          errors,
-          touched,
-          values,
-        }: {
-          errors: FormikErrors<SignInData>;
-          touched: FormikTouched<SignInData>;
-          values: SignInData;
-        }) => {
-          const showEmailError = errors.email && touched.email;
-          const showPasswordError = errors.password && touched.password;
-
-          const isButtonDisabled =
-            Object.keys(errors).length > 0 || !values.email || !values.password;
-
-          return (
-            <Form>
-              <div className="form-input">
-                <FormInput
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  title="Email"
-                  styleClasses={`${showEmailError ? "error" : ""}`}
-                  autoComplete="email"
-                />
-                {showEmailError && (
-                  <div className="error-message">{errors.email}</div>
-                )}
-              </div>
-
-              <div className="form-input">
-                <FormInput
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="Enter your password"
-                  title="Password"
-                  styleClasses={`${showPasswordError ? "error" : ""}`}
-                  autoComplete="current-password"
-                  validate={(value) =>
-                    !value ? "The field is required" : undefined
-                  }
-                />
-                {showPasswordError && (
-                  <div className="error-message">{errors.password}</div>
-                )}
-              </div>
-              {errors.backendError && (
-                <div className="server-error-message">
-                  {errors.backendError}
-                </div>
-              )}
-              <Button
-                disabled={isButtonDisabled}
-                buttonType={ButtonType.INITIAL_BLUE}
-                styleClasses="form-button"
-                type="submit"
-              >
-                {"Login"}
-              </Button>
-            </Form>
-          );
-        }}
-      </Formik>
-    </BaseAuthenticationForm>
-  );
-};
+  },
+})(SignInFormBase);
 
 export default SignInForm;
