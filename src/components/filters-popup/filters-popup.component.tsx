@@ -40,13 +40,13 @@ const FiltersPopup = () => {
           <label htmlFor="organism" className="filters-label">
             {"Organism"}
           </label>
-          <select id="organism" name="organism" className="filters-select">
-            <option
-              value=""
-              disabled
-              selected
-              className="select-initial-option"
-            >
+          <select
+            id="organism"
+            name="organism"
+            className="filters-select"
+            defaultValue=""
+          >
+            <option value="" disabled>
               {"Select an option\r"}
             </option>
           </select>
@@ -83,8 +83,9 @@ const FiltersPopup = () => {
             id="annotationScore"
             name="annotationScore"
             className="filters-select"
+            defaultValue=""
           >
-            <option value="" disabled selected>
+            <option value="" disabled>
               {"Select an option\r"}
             </option>
           </select>
@@ -98,8 +99,9 @@ const FiltersPopup = () => {
             id="proteinWith"
             name="proteinWith"
             className="filters-select"
+            defaultValue=""
           >
-            <option value="" disabled selected>
+            <option value="" disabled>
               {"Select\r"}
             </option>
           </select>

@@ -17,6 +17,7 @@ import { AppDispatch } from "../../store/store";
 import "./search-page.style.scss";
 
 const SearchPage = () => {
+  const [showFilters, setShowFilters] = useState(false);
   const items = useSelector(selectItems);
   const dispatch = useDispatch<AppDispatch>();
   const searchRef = useRef<HTMLInputElement | null>(null);
@@ -109,12 +110,18 @@ const SearchPage = () => {
         <Button buttonType={ButtonType.BASE} styleClasses="search-btn">
           {"Search"}
         </Button>
-        <Button buttonType={ButtonType.FILTERS}>
+        <Button
+          buttonType={ButtonType.FILTERS}
+          onClick={() => setShowFilters((prev) => !prev)}
+        >
           <FiltersIcon />
         </Button>
       </form>
-      <FiltersPopup />
+
+      {showFilters && <FiltersPopup />}
+
       {showSearchResultsTitle()}
+
       {items.length > 0 ? (
         <DataTable
           columns={columns}
