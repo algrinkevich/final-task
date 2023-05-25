@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 
 import { ReactComponent as DashIcon } from "../../assets/dash.svg";
 import {
@@ -45,6 +46,7 @@ const FiltersPopup = ({
   const [proteinsWith, setProteinsWith] = useState<Filter[]>([]);
   const [annotationScores, setAnnotationScores] = useState<Filter[]>([]);
   const dispatch = useDispatch<AppDispatch>();
+  const [searchParams, setSearchParams] = useSearchParams();
   //const searchQuery = useSelector(selectSearchQuery);
 
   const handleOrganismLoading = () => {
@@ -81,49 +83,69 @@ const FiltersPopup = ({
   const applyFilters = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const geneValue = (
+      event.currentTarget.elements.namedItem("geneName") as HTMLInputElement
+    ).value;
+
+    const organismValue = (
+      event.currentTarget.elements.namedItem("organism") as HTMLSelectElement
+    ).value;
+
+    const sequenceLengthFromValue = Number.parseInt(
+      (
+        event.currentTarget.elements.namedItem(
+          "sequenceFrom"
+        ) as HTMLInputElement
+      ).value
+    );
+
+    const sequenceLengthToValue = Number.parseInt(
+      (event.currentTarget.elements.namedItem("sequenceTo") as HTMLInputElement)
+        .value
+    );
+
+    const annotationScoreValue = (
+      event.currentTarget.elements.namedItem(
+        "annotationScore"
+      ) as HTMLSelectElement
+    ).value;
+
+    const proteinWithValue = (
+      event.currentTarget.elements.namedItem("proteinWith") as HTMLSelectElement
+    ).value;
+
     dispatch(
       fetchItems({
         query: searchQuery,
         filters: {
-          gene: (
-            event.currentTarget.elements.namedItem(
-              "geneName"
-            ) as HTMLInputElement
-          ).value,
-          organism: (
-            event.currentTarget.elements.namedItem(
-              "organism"
-            ) as HTMLSelectElement
-          ).value,
+          gene: geneValue,
+          organism: organismValue,
           sequence: {
-            from: Number.parseInt(
-              (
-                event.currentTarget.elements.namedItem(
-                  "sequenceFrom"
-                ) as HTMLInputElement
-              ).value
-            ),
-            to: Number.parseInt(
-              (
-                event.currentTarget.elements.namedItem(
-                  "sequenceTo"
-                ) as HTMLInputElement
-              ).value
-            ),
+            from: sequenceLengthFromValue,
+            to: sequenceLengthToValue,
           },
-          annotationScore: (
-            event.currentTarget.elements.namedItem(
-              "annotationScore"
-            ) as HTMLSelectElement
-          ).value,
-          proteinWith: (
-            event.currentTarget.elements.namedItem(
-              "proteinWith"
-            ) as HTMLSelectElement
-          ).value,
+          annotationScore: annotationScoreValue,
+          proteinWith: proteinWithValue,
         },
       })
     );
+    setSearchParams({
+      query: searchQuery,
+      geneValue,
+      organismName:
+        organisms.find(({ value }) => value === organismValue)?.label || "",
+      organismValue,
+      sequenceLengthFromValue: sequenceLengthFromValue.toString(),
+      sequenceLengthToValue: sequenceLengthToValue.toString(),
+      annotationScoreValue,
+      annotationScoreName:
+        annotationScores.find(({ value }) => value === annotationScoreValue)
+          ?.label || "",
+      proteinWithValue,
+      proteinWithName:
+        proteinsWith.find(({ value }) => value === proteinWithValue)?.label ||
+        "",
+    });
     onClose();
   };
 
