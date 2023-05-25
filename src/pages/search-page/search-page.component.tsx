@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { ReactComponent as FiltersIcon } from "../../assets/filters.svg";
 import { ReactComponent as SortIcon } from "../../assets/sortIcon.svg";
 import Button, { ButtonType } from "../../components/button/button.component";
+import FiltersPopup from "../../components/filters-popup/filters-popup.component";
 import {
   fetchItems,
   SearchItem,
@@ -112,6 +113,7 @@ const SearchPage = () => {
           <FiltersIcon />
         </Button>
       </form>
+      <FiltersPopup />
       {showSearchResultsTitle()}
       {items.length > 0 ? (
         <DataTable

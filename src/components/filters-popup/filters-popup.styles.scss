@@ -1,0 +1,96 @@
+.filters-container {
+    position: absolute;
+    right: 130px;
+    margin-top: 3px;
+    width: 20.9375em;
+    border: 1px solid #D9D9D9;
+    border-radius: 12px;
+    padding: 12px 14px 13px 14px;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    z-index: 2;
+
+    h3 {
+        font-size: 18px;
+        margin: 0;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 25px;
+        color: #000000;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        margin-top: 22px;
+    }
+
+    .form-input-distance {
+        margin-bottom: 15px;
+    }
+
+    .filters-sequence-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        .sequence-input {
+            width: 8.75em;
+        }
+    }
+
+    .select-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filters-label {
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 19px;
+        color: #2B2B2B;
+        margin-left: 2px;
+    }
+
+    .filters-select {
+        background: #F5F5F5;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        padding: 15px 14px 14px 14px;
+        outline: none;
+        border: 2px solid transparent;
+        font-family: inherit;
+        color: #2B2B2B;
+        background-image: url("../../assets/selectIcon.svg");
+        background-repeat: no-repeat;
+        background-position-y: center;
+        background-position-x: 95%;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        appearance: none;
+
+        .select-initial-option {
+            color: #6C6C6C;
+        }
+
+        &:focus {
+            border: 2px solid #3C86F4;
+            background-color: #ffffff;
+        }
+    }
+
+    .buttons-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2.0625em;
+
+        .filters-btn {
+            width: 47%;
+        }
+    }
+}

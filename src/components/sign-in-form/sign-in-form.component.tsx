@@ -102,8 +102,6 @@ const SignInFormBase = ({
   );
 };
 
-
-
 const SignInForm = withFormik<SignInFormProps, SignInData>({
   validate: (values: SignInData) => {
     const errors = {

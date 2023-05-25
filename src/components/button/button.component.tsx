@@ -4,6 +4,7 @@ import "./button.styles.scss";
 
 export enum ButtonType {
   BASE = "base",
+  WHITE_BASE = "white-base",
   INITIAL_WHITE = "initial-white",
   INITIAL_BLUE = "initial-blue",
   FILTERS = "filters-btn",

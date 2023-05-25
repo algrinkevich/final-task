@@ -5,7 +5,7 @@ import "./form-input.styles.scss";
 interface FormInputProps extends ComponentProps<"input"> {
   type: string;
   placeholder: string;
-  title: string;
+  title?: string;
   id: string;
   name: string;
   styleClasses?: string;
@@ -23,9 +23,11 @@ const FormInput = ({
 }: FormInputProps) => {
   return (
     <Fragment>
-      <label htmlFor={id} className="input-title">
-        {title}
-      </label>
+      {title && (
+        <label htmlFor={id} className="input-title">
+          {title}
+        </label>
+      )}
       <input
         type={type}
         className={`${styleClasses || ""} input-field`}
