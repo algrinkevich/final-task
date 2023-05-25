@@ -65,7 +65,7 @@ const SearchPage = () => {
   ];
 
   useEffect(() => {
-    dispatch(fetchItems(searchQuery));
+    dispatch(fetchItems({ query: searchQuery }));
   }, [searchQuery, dispatch]);
 
   const onSearch = useCallback(
@@ -105,7 +105,7 @@ const SearchPage = () => {
           className="input-search"
           placeholder="Enter search value"
           ref={searchRef}
-          defaultValue={searchQuery}
+          defaultValue={searchQuery === "*" ? "" : searchQuery}
         />
         <Button buttonType={ButtonType.BASE} styleClasses="search-btn">
           {"Search"}
@@ -113,12 +113,18 @@ const SearchPage = () => {
         <Button
           buttonType={ButtonType.FILTERS}
           onClick={() => setShowFilters((prev) => !prev)}
+          type="button"
         >
           <FiltersIcon />
         </Button>
       </form>
 
-      {showFilters && <FiltersPopup />}
+      {showFilters && (
+        <FiltersPopup
+          searchQuery={searchQuery}
+          onClose={() => setShowFilters(false)}
+        />
+      )}
 
       {showSearchResultsTitle()}
 

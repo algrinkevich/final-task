@@ -1,4 +1,12 @@
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import { ReactComponent as DashIcon } from "../../assets/dash.svg";
+import {
+  fetchItems,
+  selectSearchQuery,
+} from "../../store/slices/entries.slice";
+import { AppDispatch } from "../../store/store";
 import Button, { ButtonType } from "../button/button.component";
 import FormInput from "../form-input/form-input.component";
 
@@ -21,12 +29,87 @@ interface FiltersData {
 //   annotationScore: "",
 //   proteinWith: "",
 // };
+interface Filter {
+  label: string;
+  value: string;
+}
 
-const FiltersPopup = () => {
+const FiltersPopup = ({
+  searchQuery,
+  onClose,
+}: {
+  searchQuery: string;
+  onClose: () => void;
+}) => {
+  const [organisms, setOrganisms] = useState<Filter[]>([]);
+  const [proteinsWith, setProteinsWith] = useState<Filter[]>([]);
+  const [annotationScores, setAnnotationScores] = useState<Filter[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  //const searchQuery = useSelector(selectSearchQuery);
+
+  const handleOrganismLoading = () => {
+    return fetch(
+      ` https://rest.uniprot.org/uniprotkb/search?facets=model_organism&query=${searchQuery}`
+    )
+      .then((response) => response.json())
+      .then((results) => setOrganisms(results.facets[0].values));
+  };
+
+  const handleAnnotationScoreLoading = () => {
+    return fetch(
+      ` https://rest.uniprot.org/uniprotkb/search?facets=annotation_score&query=${searchQuery}`
+    )
+      .then((response) => response.json())
+      .then((results) =>
+        setAnnotationScores(
+          results.facets[0].values.map((item: { value: string }) => ({
+            value: item.value,
+            label: item.value,
+          }))
+        )
+      );
+  };
+
+  const handleProteinWithLoading = () => {
+    return fetch(
+      ` https://rest.uniprot.org/uniprotkb/search?facets=proteins_with&query=${searchQuery}`
+    )
+      .then((response) => response.json())
+      .then((results) => setProteinsWith(results.facets[0].values));
+  };
+
+  const applyFilters = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    dispatch(
+      fetchItems({
+        query: searchQuery,
+        filters: {
+          organism: (
+            event.currentTarget.elements.namedItem(
+              "organism"
+            ) as HTMLSelectElement
+          ).value,
+          annotationScore: (
+            event.currentTarget.elements.namedItem(
+              "annotationScore"
+            ) as HTMLSelectElement
+          ).value,
+          proteinWith: (
+            event.currentTarget.elements.namedItem(
+              "proteinWith"
+            ) as HTMLSelectElement
+          ).value,
+        },
+      })
+    );
+    onClose();
+  };
+
   return (
     <div className="filters-container">
       <h3>{"Filters"}</h3>
-      <form>
+      <form onSubmit={applyFilters}>
         <FormInput
           type="text"
           placeholder="Enter Gene Name"
@@ -45,10 +128,16 @@ const FiltersPopup = () => {
             name="organism"
             className="filters-select"
             defaultValue=""
+            onClick={handleOrganismLoading}
           >
             <option value="" disabled>
               {"Select an option\r"}
             </option>
+            {organisms.map((organism) => (
+              <option key={organism.value} value={organism.value}>
+                {organism.label}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -84,10 +173,16 @@ const FiltersPopup = () => {
             name="annotationScore"
             className="filters-select"
             defaultValue=""
+            onClick={handleAnnotationScoreLoading}
           >
             <option value="" disabled>
               {"Select an option\r"}
             </option>
+            {annotationScores.map((score) => (
+              <option key={score.value} value={score.value}>
+                {score.label}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -100,18 +195,33 @@ const FiltersPopup = () => {
             name="proteinWith"
             className="filters-select"
             defaultValue=""
+            onClick={handleProteinWithLoading}
           >
             <option value="" disabled>
               {"Select\r"}
             </option>
+            {proteinsWith.map((protein) => (
+              <option key={protein.value} value={protein.value}>
+                {protein.label}
+              </option>
+            ))}
           </select>
         </div>
 
         <div className="buttons-container">
-          <Button buttonType={ButtonType.WHITE_BASE} styleClasses="filters-btn">
+          <Button
+            buttonType={ButtonType.WHITE_BASE}
+            styleClasses="filters-btn"
+            type="reset"
+            onClick={onClose}
+          >
             {"Cancel"}
           </Button>
-          <Button buttonType={ButtonType.BASE} styleClasses="filters-btn">
+          <Button
+            buttonType={ButtonType.BASE}
+            styleClasses="filters-btn"
+            type="submit"
+          >
             {"Apply filters"}
           </Button>
         </div>

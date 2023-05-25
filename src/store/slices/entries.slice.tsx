@@ -72,11 +72,22 @@ interface UniProtSearchResponse {
   }[];
 }
 
+interface FetchItemsArgs {
+  query: string;
+  filters?: {
+    organism: string;
+    annotationScore: string;
+    proteinWith: string;
+  };
+}
+
 export const fetchItems = createAsyncThunk(
   "entries/fetchItems",
-  (query: string) => {
+  (args: FetchItemsArgs) => {
+    const filteredQuery = `${args.query} AND (model_organism:${args.filters?.organism}) AND (annotation_score:${args.filters?.annotationScore}) AND (proteins_with:${args.filters?.proteinWith})`;
+
     return fetch(
-      `https://rest.uniprot.org/uniprotkb/search?fields=accession,reviewed,id,protein_name,gene_names,organism_name,length,ft_peptide,cc_subcellular_location&query=${query}`
+      `https://rest.uniprot.org/uniprotkb/search?fields=accession,reviewed,id,protein_name,gene_names,organism_name,length,ft_peptide,cc_subcellular_location&query=${filteredQuery}`
     ).then((response) => response.json());
   }
 );
