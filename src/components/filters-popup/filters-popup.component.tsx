@@ -85,11 +85,32 @@ const FiltersPopup = ({
       fetchItems({
         query: searchQuery,
         filters: {
+          gene: (
+            event.currentTarget.elements.namedItem(
+              "geneName"
+            ) as HTMLInputElement
+          ).value,
           organism: (
             event.currentTarget.elements.namedItem(
               "organism"
             ) as HTMLSelectElement
           ).value,
+          sequence: {
+            from: Number.parseInt(
+              (
+                event.currentTarget.elements.namedItem(
+                  "sequenceFrom"
+                ) as HTMLInputElement
+              ).value
+            ),
+            to: Number.parseInt(
+              (
+                event.currentTarget.elements.namedItem(
+                  "sequenceTo"
+                ) as HTMLInputElement
+              ).value
+            ),
+          },
           annotationScore: (
             event.currentTarget.elements.namedItem(
               "annotationScore"

@@ -75,16 +75,48 @@ interface UniProtSearchResponse {
 interface FetchItemsArgs {
   query: string;
   filters?: {
-    organism: string;
-    annotationScore: string;
-    proteinWith: string;
+    gene?: string;
+    organism?: string;
+    sequence?: {
+      from?: number;
+      to?: number;
+    };
+    annotationScore?: string;
+    proteinWith?: string;
   };
 }
 
 export const fetchItems = createAsyncThunk(
   "entries/fetchItems",
   (args: FetchItemsArgs) => {
-    const filteredQuery = `${args.query} AND (model_organism:${args.filters?.organism}) AND (annotation_score:${args.filters?.annotationScore}) AND (proteins_with:${args.filters?.proteinWith})`;
+    let filteredQuery = args.query;
+
+    if (args?.filters?.gene) {
+      filteredQuery += ` AND (gene:${args.filters?.gene})`;
+    }
+
+    if (args?.filters?.organism) {
+      filteredQuery += ` AND (model_organism:${args.filters?.organism})`;
+    }
+
+    if (
+      args?.filters?.sequence &&
+      (args.filters.sequence.from || args.filters.sequence.to)
+    ) {
+      filteredQuery += ` AND (length:[${args.filters.sequence.from || "*"} TO ${
+        args.filters.sequence.to || "*"
+      }])`;
+    }
+
+    if (args?.filters?.annotationScore) {
+      filteredQuery += ` AND (annotation_score:${args.filters?.annotationScore})`;
+    }
+
+    if (args?.filters?.proteinWith) {
+      filteredQuery += ` AND (proteins_with:${args.filters?.proteinWith})`;
+    }
+
+    filteredQuery = encodeURI(filteredQuery);
 
     return fetch(
       `https://rest.uniprot.org/uniprotkb/search?fields=accession,reviewed,id,protein_name,gene_names,organism_name,length,ft_peptide,cc_subcellular_location&query=${filteredQuery}`
