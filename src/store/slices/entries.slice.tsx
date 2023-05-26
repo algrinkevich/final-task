@@ -43,7 +43,7 @@ export const entriesSlice = createSlice({
             geneNames: r.genes?.map((gene) => gene.geneName?.value || "") || [],
             ccSubcellularLocation:
               r.comments?.flatMap((comment) =>
-                comment.subcellularLocations.map((sl) => sl.location.value)
+                comment.subcellularLocations?.map((sl) => sl.location.value)
               ) || [],
             length: r.sequence.length,
           };

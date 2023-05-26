@@ -42,11 +42,31 @@ const FiltersPopup = ({
   searchQuery: string;
   onClose: () => void;
 }) => {
-  const [organisms, setOrganisms] = useState<Filter[]>([]);
-  const [proteinsWith, setProteinsWith] = useState<Filter[]>([]);
-  const [annotationScores, setAnnotationScores] = useState<Filter[]>([]);
-  const dispatch = useDispatch<AppDispatch>();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const [organisms, setOrganisms] = useState<Filter[]>([
+    {
+      label: searchParams.get("organismName") || "",
+      value: searchParams.get("organismValue") || "",
+    },
+  ]);
+
+  const [annotationScores, setAnnotationScores] = useState<Filter[]>([
+    {
+      label: searchParams.get("annotationScoreName") || "",
+      value: searchParams.get("annotationScoreValue") || "",
+    },
+  ]);
+
+  const [proteinsWith, setProteinsWith] = useState<Filter[]>([
+    {
+      label: searchParams.get("proteinWithName") || "",
+      value: searchParams.get("proteinWithValue") || "",
+    },
+  ]);
+
+  const dispatch = useDispatch<AppDispatch>();
+
   //const searchQuery = useSelector(selectSearchQuery);
 
   const handleOrganismLoading = () => {
@@ -160,6 +180,7 @@ const FiltersPopup = ({
           id="geneName"
           name="geneName"
           styleClasses="form-input-distance"
+          defaultValue={searchParams.get("geneValue") || ""}
         />
 
         <div className="select-container form-input-distance">
@@ -170,7 +191,7 @@ const FiltersPopup = ({
             id="organism"
             name="organism"
             className="filters-select"
-            defaultValue=""
+            defaultValue={searchParams.get("organismValue") || ""}
             onClick={handleOrganismLoading}
           >
             <option value="" disabled>
@@ -195,6 +216,7 @@ const FiltersPopup = ({
               id="sequenceFrom"
               name="sequenceFrom"
               styleClasses="sequence-input"
+              defaultValue={searchParams.get("sequenceLengthFromValue") || ""}
             />
             <DashIcon />
             <FormInput
@@ -203,6 +225,7 @@ const FiltersPopup = ({
               id="sequenceTo"
               name="sequenceTo"
               styleClasses="sequence-input"
+              defaultValue={searchParams.get("sequenceLengthToValue") || ""}
             />
           </div>
         </div>
@@ -215,7 +238,7 @@ const FiltersPopup = ({
             id="annotationScore"
             name="annotationScore"
             className="filters-select"
-            defaultValue=""
+            defaultValue={searchParams.get("annotationScoreValue") || ""}
             onClick={handleAnnotationScoreLoading}
           >
             <option value="" disabled>
@@ -237,7 +260,7 @@ const FiltersPopup = ({
             id="proteinWith"
             name="proteinWith"
             className="filters-select"
-            defaultValue=""
+            defaultValue={searchParams.get("proteinWithValue") || ""}
             onClick={handleProteinWithLoading}
           >
             <option value="" disabled>
