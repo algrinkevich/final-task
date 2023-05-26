@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
 
 import { ReactComponent as DashIcon } from "../../assets/dash.svg";
 import {
-  fetchItems,
+  selectFilters,
   selectSearchQuery,
+  setFilters,
 } from "../../store/slices/entries.slice";
 import { AppDispatch } from "../../store/store";
 import Button, { ButtonType } from "../button/button.component";
@@ -13,61 +13,36 @@ import FormInput from "../form-input/form-input.component";
 
 import "./filters-popup.styles.scss";
 
-interface FiltersData {
-  geneName: string;
-  organism: string;
-  sequenceLengthFrom: number | null;
-  sequenceLengthTo: number | null;
-  annotationScore: string;
-  proteinWith: string;
-}
-
-// const defaultFormFields: FiltersData = {
-//   geneName: "",
-//   organism: "",
-//   sequenceLengthFrom: null,
-//   sequenceLengthTo: null,
-//   annotationScore: "",
-//   proteinWith: "",
-// };
 interface Filter {
   label: string;
   value: string;
 }
 
-const FiltersPopup = ({
-  searchQuery,
-  onClose,
-}: {
-  searchQuery: string;
-  onClose: () => void;
-}) => {
-  const [searchParams, setSearchParams] = useSearchParams();
+const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
+  const searchQuery = useSelector(selectSearchQuery);
+  const dispatch = useDispatch<AppDispatch>();
+  const filters = useSelector(selectFilters);
 
   const [organisms, setOrganisms] = useState<Filter[]>([
     {
-      label: searchParams.get("organismName") || "",
-      value: searchParams.get("organismValue") || "",
+      label: filters?.organism?.name || "",
+      value: filters?.organism?.id || "",
     },
   ]);
 
   const [annotationScores, setAnnotationScores] = useState<Filter[]>([
     {
-      label: searchParams.get("annotationScoreName") || "",
-      value: searchParams.get("annotationScoreValue") || "",
+      label: filters?.annotationScore || "",
+      value: filters?.annotationScore || "",
     },
   ]);
 
   const [proteinsWith, setProteinsWith] = useState<Filter[]>([
     {
-      label: searchParams.get("proteinWithName") || "",
-      value: searchParams.get("proteinWithValue") || "",
+      label: filters?.proteinWith?.name || "",
+      value: filters?.proteinWith?.id || "",
     },
   ]);
-
-  const dispatch = useDispatch<AppDispatch>();
-
-  //const searchQuery = useSelector(selectSearchQuery);
 
   const handleOrganismLoading = () => {
     return fetch(
@@ -103,69 +78,69 @@ const FiltersPopup = ({
   const applyFilters = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const geneValue = (
-      event.currentTarget.elements.namedItem("geneName") as HTMLInputElement
-    ).value;
+    const formElements = event.currentTarget.elements;
 
-    const organismValue = (
-      event.currentTarget.elements.namedItem("organism") as HTMLSelectElement
-    ).value;
+    const getFormElement = <ElementType extends HTMLElement>(name: string) => {
+      return formElements.namedItem(name) as ElementType;
+    };
+
+    const geneValue = getFormElement<HTMLInputElement>("geneName").value;
+
+    const { selectedIndex: organismIndex, options: organismOptions } =
+      getFormElement<HTMLSelectElement>("organism");
+
+    const { value: organismValue, text: organismName } =
+      organismIndex !== 0
+        ? organismOptions[organismIndex]
+        : { value: "", text: "" };
 
     const sequenceLengthFromValue = Number.parseInt(
-      (
-        event.currentTarget.elements.namedItem(
-          "sequenceFrom"
-        ) as HTMLInputElement
-      ).value
+      getFormElement<HTMLInputElement>("sequenceFrom").value
     );
 
     const sequenceLengthToValue = Number.parseInt(
-      (event.currentTarget.elements.namedItem("sequenceTo") as HTMLInputElement)
-        .value
+      getFormElement<HTMLInputElement>("sequenceTo").value
     );
 
-    const annotationScoreValue = (
-      event.currentTarget.elements.namedItem(
-        "annotationScore"
-      ) as HTMLSelectElement
-    ).value;
+    const annotationScoreValue =
+      getFormElement<HTMLSelectElement>("annotationScore").value;
 
-    const proteinWithValue = (
-      event.currentTarget.elements.namedItem("proteinWith") as HTMLSelectElement
-    ).value;
+    const { selectedIndex: proteinWithIndex, options: proteinWithOptions } =
+      getFormElement<HTMLSelectElement>("proteinWith");
 
+    const { value: proteinWithValue, text: proteinWithName } =
+      proteinWithIndex !== 0
+        ? proteinWithOptions[proteinWithIndex]
+        : { value: "", text: "" };
+
+    // dispatch(
+    //   fetchItems({
+    //     query: searchQuery,
+    //     filters: {
+    //       gene: geneValue,
+    //       organism: organismValue,
+    //       sequence: {
+    //         from: sequenceLengthFromValue,
+    //         to: sequenceLengthToValue,
+    //       },
+    //       annotationScore: annotationScoreValue,
+    //       proteinWith: proteinWithValue,
+    //     },
+    //   })
+    // );
     dispatch(
-      fetchItems({
-        query: searchQuery,
-        filters: {
-          gene: geneValue,
-          organism: organismValue,
-          sequence: {
-            from: sequenceLengthFromValue,
-            to: sequenceLengthToValue,
-          },
-          annotationScore: annotationScoreValue,
-          proteinWith: proteinWithValue,
+      setFilters({
+        gene: geneValue,
+        organism: { name: organismName, id: organismValue },
+        sequence: {
+          from: sequenceLengthFromValue,
+          to: sequenceLengthToValue,
         },
+        annotationScore: annotationScoreValue,
+        proteinWith: { name: proteinWithName, id: proteinWithValue },
       })
     );
-    setSearchParams({
-      query: searchQuery,
-      geneValue,
-      organismName:
-        organisms.find(({ value }) => value === organismValue)?.label || "",
-      organismValue,
-      sequenceLengthFromValue: sequenceLengthFromValue.toString(),
-      sequenceLengthToValue: sequenceLengthToValue.toString(),
-      annotationScoreValue,
-      annotationScoreName:
-        annotationScores.find(({ value }) => value === annotationScoreValue)
-          ?.label || "",
-      proteinWithValue,
-      proteinWithName:
-        proteinsWith.find(({ value }) => value === proteinWithValue)?.label ||
-        "",
-    });
+
     onClose();
   };
 
@@ -180,7 +155,8 @@ const FiltersPopup = ({
           id="geneName"
           name="geneName"
           styleClasses="form-input-distance"
-          defaultValue={searchParams.get("geneValue") || ""}
+          defaultValue={filters?.gene}
+          //defaultValue={searchParams.get("geneValue") || ""}
         />
 
         <div className="select-container form-input-distance">
@@ -191,10 +167,11 @@ const FiltersPopup = ({
             id="organism"
             name="organism"
             className="filters-select"
-            defaultValue={searchParams.get("organismValue") || ""}
+            //defaultValue={searchParams.get("organismValue") || ""}
+            defaultValue={filters?.organism?.id}
             onClick={handleOrganismLoading}
           >
-            <option value="" disabled>
+            <option value="" key={0}>
               {"Select an option\r"}
             </option>
             {organisms.map((organism) => (
@@ -216,7 +193,8 @@ const FiltersPopup = ({
               id="sequenceFrom"
               name="sequenceFrom"
               styleClasses="sequence-input"
-              defaultValue={searchParams.get("sequenceLengthFromValue") || ""}
+              //defaultValue={searchParams.get("sequenceLengthFromValue") || ""}
+              defaultValue={filters?.sequence?.from}
             />
             <DashIcon />
             <FormInput
@@ -225,7 +203,8 @@ const FiltersPopup = ({
               id="sequenceTo"
               name="sequenceTo"
               styleClasses="sequence-input"
-              defaultValue={searchParams.get("sequenceLengthToValue") || ""}
+              //defaultValue={searchParams.get("sequenceLengthToValue") || ""}
+              defaultValue={filters?.sequence?.to}
             />
           </div>
         </div>
@@ -238,10 +217,11 @@ const FiltersPopup = ({
             id="annotationScore"
             name="annotationScore"
             className="filters-select"
-            defaultValue={searchParams.get("annotationScoreValue") || ""}
+            //defaultValue={searchParams.get("annotationScoreValue") || ""}
+            defaultValue={filters?.annotationScore}
             onClick={handleAnnotationScoreLoading}
           >
-            <option value="" disabled>
+            <option value="" key={0}>
               {"Select an option\r"}
             </option>
             {annotationScores.map((score) => (
@@ -260,10 +240,11 @@ const FiltersPopup = ({
             id="proteinWith"
             name="proteinWith"
             className="filters-select"
-            defaultValue={searchParams.get("proteinWithValue") || ""}
+            //defaultValue={searchParams.get("proteinWithValue") || ""}
+            defaultValue={filters?.proteinWith?.id}
             onClick={handleProteinWithLoading}
           >
-            <option value="" disabled>
+            <option value="" key={0}>
               {"Select\r"}
             </option>
             {proteinsWith.map((protein) => (

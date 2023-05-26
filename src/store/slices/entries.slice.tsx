@@ -14,12 +14,45 @@ export interface SearchItem {
 
 interface EntriesState {
   items: SearchItem[];
-  searchQuery: string;
+  search: SearchState;
+}
+
+interface UniProtSearchResponse {
+  results: {
+    primaryAccession: string;
+    uniProtkbId: string;
+    organism: {
+      scientificName: string;
+    };
+    genes: {
+      geneName: { value: string };
+    }[];
+    comments: {
+      subcellularLocations: {
+        location: { value: string };
+      }[];
+    }[];
+    sequence: { length: number };
+  }[];
+}
+
+interface SearchState {
+  query: string;
+  filters?: {
+    gene?: string;
+    organism?: { name: string; id: string };
+    sequence?: {
+      from?: number;
+      to?: number;
+    };
+    annotationScore?: string;
+    proteinWith?: { name: string; id: string };
+  };
 }
 
 const INITIAL_STATE: EntriesState = {
   items: [],
-  searchQuery: "",
+  search: { query: "" },
 };
 
 export const entriesSlice = createSlice({
@@ -27,7 +60,10 @@ export const entriesSlice = createSlice({
   initialState: INITIAL_STATE,
   reducers: {
     setSearchQuery(state, action) {
-      state.searchQuery = action.payload;
+      state.search.query = action.payload;
+    },
+    setFilters(state, action) {
+      state.search.filters = action.payload;
     },
   },
   extraReducers(builder) {
@@ -53,56 +89,24 @@ export const entriesSlice = createSlice({
   },
 });
 
-interface UniProtSearchResponse {
-  results: {
-    primaryAccession: string;
-    uniProtkbId: string;
-    organism: {
-      scientificName: string;
-    };
-    genes: {
-      geneName: { value: string };
-    }[];
-    comments: {
-      subcellularLocations: {
-        location: { value: string };
-      }[];
-    }[];
-    sequence: { length: number };
-  }[];
-}
-
-interface FetchItemsArgs {
-  query: string;
-  filters?: {
-    gene?: string;
-    organism?: string;
-    sequence?: {
-      from?: number;
-      to?: number;
-    };
-    annotationScore?: string;
-    proteinWith?: string;
-  };
-}
-
 export const fetchItems = createAsyncThunk(
   "entries/fetchItems",
-  (args: FetchItemsArgs) => {
+  (args: SearchState) => {
     let filteredQuery = args.query;
 
     if (args?.filters?.gene) {
       filteredQuery += ` AND (gene:${args.filters?.gene})`;
     }
 
-    if (args?.filters?.organism) {
-      filteredQuery += ` AND (model_organism:${args.filters?.organism})`;
+    if (args?.filters?.organism?.id) {
+      filteredQuery += ` AND (model_organism:${args.filters?.organism.id})`;
     }
 
     if (
       args?.filters?.sequence &&
       (args.filters.sequence.from || args.filters.sequence.to)
     ) {
+      
       filteredQuery += ` AND (length:[${args.filters.sequence.from || "*"} TO ${
         args.filters.sequence.to || "*"
       }])`;
@@ -112,8 +116,8 @@ export const fetchItems = createAsyncThunk(
       filteredQuery += ` AND (annotation_score:${args.filters?.annotationScore})`;
     }
 
-    if (args?.filters?.proteinWith) {
-      filteredQuery += ` AND (proteins_with:${args.filters?.proteinWith})`;
+    if (args?.filters?.proteinWith?.id) {
+      filteredQuery += ` AND (proteins_with:${args.filters?.proteinWith.id})`;
     }
 
     filteredQuery = encodeURI(filteredQuery);
@@ -124,10 +128,11 @@ export const fetchItems = createAsyncThunk(
   }
 );
 
-export const { setSearchQuery } = entriesSlice.actions;
+export const { setSearchQuery, setFilters } = entriesSlice.actions;
 
 export const selectItems = (state: RootState) => state.entries.items;
 export const selectSearchQuery = (state: RootState) =>
-  state.entries.searchQuery;
+  state.entries.search.query;
+export const selectFilters = (state: RootState) => state.entries.search.filters;
 
 export const entriesReducer = entriesSlice.reducer;

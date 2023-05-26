@@ -10,7 +10,11 @@ import FiltersPopup from "../../components/filters-popup/filters-popup.component
 import {
   fetchItems,
   SearchItem,
+  selectFilters,
   selectItems,
+  selectSearchQuery,
+  setFilters,
+  setSearchQuery,
 } from "../../store/slices/entries.slice";
 import { AppDispatch } from "../../store/store";
 
@@ -22,10 +26,8 @@ const SearchPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const searchRef = useRef<HTMLInputElement | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("query") || ""
-  );
+  const searchQuery = useSelector(selectSearchQuery);
+  const filters = useSelector(selectFilters);
 
   const columns: TableColumn<SearchItem>[] = [
     {
@@ -65,20 +67,63 @@ const SearchPage = () => {
   ];
 
   useEffect(() => {
-    dispatch(fetchItems({ query: searchQuery }));
-  }, [searchQuery, dispatch]);
+    dispatch(setSearchQuery(searchParams.get("query") || ""));
+    dispatch(
+      setFilters({
+        gene: searchParams.get("geneValue"),
+        organism: {
+          name: searchParams.get("organismName"),
+          id: searchParams.get("organismValue"),
+        },
+        sequence: {
+          from: searchParams.get("sequenceLengthFromValue"),
+          to: searchParams.get("sequenceLengthToValue"),
+        },
+        annotationScore: searchParams.get("annotationScoreValue"),
+        proteinWith: {
+          name: searchParams.get("proteinWithName"),
+          id: searchParams.get("proteinWithValue"),
+        },
+      })
+    );
+  }, [dispatch, searchParams]);
+
+  useEffect(() => {
+    dispatch(fetchItems({ query: searchQuery, filters }));
+
+    const queryString = {
+      query: searchQuery,
+      geneValue: filters?.gene,
+      organismName: filters?.organism?.name,
+      organismValue: filters?.organism?.id,
+      sequenceLengthFromValue: filters?.sequence?.from
+        ? filters?.sequence?.from?.toString()
+        : null,
+      sequenceLengthToValue: filters?.sequence?.to
+        ? filters?.sequence?.to?.toString()
+        : null,
+      annotationScoreValue: filters?.annotationScore,
+      proteinWithValue: filters?.proteinWith?.id,
+      proteinWithName: filters?.proteinWith?.name,
+    };
+
+    const cleanedUpQueryString = Object.fromEntries(
+      Object.entries(queryString).filter(([_, v]) => !!v)
+    ) as {
+      [key: string]: string;
+    };
+
+    console.log("Cleaned:", cleanedUpQueryString);
+    setSearchParams(cleanedUpQueryString);
+  }, [searchQuery, dispatch, filters, setSearchParams]);
 
   const onSearch = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const query = searchRef.current?.value || "*";
-
-      setSearchQuery(query);
-
-      setSearchParams({ query });
+      dispatch(setSearchQuery(searchQuery || "*"));
     },
-    [setSearchParams]
+    [dispatch, searchQuery]
   );
 
   const showSearchResultsTitle = () => {
@@ -119,12 +164,7 @@ const SearchPage = () => {
         </Button>
       </form>
 
-      {showFilters && (
-        <FiltersPopup
-          searchQuery={searchQuery}
-          onClose={() => setShowFilters(false)}
-        />
-      )}
+      {showFilters && <FiltersPopup onClose={() => setShowFilters(false)} />}
 
       {showSearchResultsTitle()}
 
