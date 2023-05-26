@@ -113,21 +113,6 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
         ? proteinWithOptions[proteinWithIndex]
         : { value: "", text: "" };
 
-    // dispatch(
-    //   fetchItems({
-    //     query: searchQuery,
-    //     filters: {
-    //       gene: geneValue,
-    //       organism: organismValue,
-    //       sequence: {
-    //         from: sequenceLengthFromValue,
-    //         to: sequenceLengthToValue,
-    //       },
-    //       annotationScore: annotationScoreValue,
-    //       proteinWith: proteinWithValue,
-    //     },
-    //   })
-    // );
     dispatch(
       setFilters({
         gene: geneValue,
@@ -156,7 +141,6 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           name="geneName"
           styleClasses="form-input-distance"
           defaultValue={filters?.gene}
-          //defaultValue={searchParams.get("geneValue") || ""}
         />
 
         <div className="select-container form-input-distance">
@@ -167,7 +151,6 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
             id="organism"
             name="organism"
             className="filters-select"
-            //defaultValue={searchParams.get("organismValue") || ""}
             defaultValue={filters?.organism?.id}
             onClick={handleOrganismLoading}
           >
@@ -193,7 +176,6 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
               id="sequenceFrom"
               name="sequenceFrom"
               styleClasses="sequence-input"
-              //defaultValue={searchParams.get("sequenceLengthFromValue") || ""}
               defaultValue={filters?.sequence?.from}
             />
             <DashIcon />
@@ -203,7 +185,6 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
               id="sequenceTo"
               name="sequenceTo"
               styleClasses="sequence-input"
-              //defaultValue={searchParams.get("sequenceLengthToValue") || ""}
               defaultValue={filters?.sequence?.to}
             />
           </div>
@@ -217,7 +198,6 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
             id="annotationScore"
             name="annotationScore"
             className="filters-select"
-            //defaultValue={searchParams.get("annotationScoreValue") || ""}
             defaultValue={filters?.annotationScore}
             onClick={handleAnnotationScoreLoading}
           >
@@ -240,7 +220,6 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
             id="proteinWith"
             name="proteinWith"
             className="filters-select"
-            //defaultValue={searchParams.get("proteinWithValue") || ""}
             defaultValue={filters?.proteinWith?.id}
             onClick={handleProteinWithLoading}
           >
