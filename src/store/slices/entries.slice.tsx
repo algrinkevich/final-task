@@ -15,6 +15,8 @@ export interface SearchItem {
 interface EntriesState {
   items: SearchItem[];
   search: SearchState;
+  nextPageLink: string | null;
+  isSearchRunning: boolean;
 }
 
 interface UniProtSearchResponse {
@@ -53,6 +55,25 @@ interface SearchState {
 const INITIAL_STATE: EntriesState = {
   items: [],
   search: { query: "" },
+  nextPageLink: null,
+  isSearchRunning: false,
+};
+
+const searchResultsToStateItems = (searchResults: UniProtSearchResponse) => {
+  return searchResults.results.map((r, index) => {
+    return {
+      index,
+      accession: r.primaryAccession,
+      id: r.uniProtkbId,
+      organismName: r.organism.scientificName,
+      geneNames: r.genes?.map((gene) => gene.geneName?.value || "") || [],
+      ccSubcellularLocation:
+        r.comments?.flatMap((comment) =>
+          comment.subcellularLocations?.map((sl) => sl.location.value)
+        ) || [],
+      length: r.sequence.length,
+    };
+  });
 };
 
 export const entriesSlice = createSlice({
@@ -67,31 +88,55 @@ export const entriesSlice = createSlice({
     },
   },
   extraReducers(builder) {
-    builder.addCase(
-      fetchItems.fulfilled,
-      (state, action: { payload: UniProtSearchResponse }) => {
-        state.items = action.payload.results.map((r, index) => {
-          return {
-            index,
-            accession: r.primaryAccession,
-            id: r.uniProtkbId,
-            organismName: r.organism.scientificName,
-            geneNames: r.genes?.map((gene) => gene.geneName?.value || "") || [],
-            ccSubcellularLocation:
-              r.comments?.flatMap((comment) =>
-                comment.subcellularLocations?.map((sl) => sl.location.value)
-              ) || [],
-            length: r.sequence.length,
-          };
-        });
-      }
-    );
+    builder
+      .addCase(fetchItems.pending, (state) => {
+        state.isSearchRunning = true;
+      })
+      .addCase(
+        fetchItems.fulfilled,
+        (
+          state,
+          action: {
+            payload: {
+              searchResults: UniProtSearchResponse;
+              nextPageLink: string | null;
+            };
+          }
+        ) => {
+          state.isSearchRunning = false;
+          state.nextPageLink = action.payload.nextPageLink;
+          state.items = searchResultsToStateItems(action.payload.searchResults);
+        }
+      )
+      .addCase(fetchNextItems.pending, (state) => {
+        state.isSearchRunning = true;
+      })
+
+      .addCase(
+        fetchNextItems.fulfilled,
+        (
+          state,
+          action: {
+            payload: {
+              searchResults: UniProtSearchResponse;
+              nextPageLink: string | null;
+            };
+          }
+        ) => {
+          state.isSearchRunning = false;
+          state.nextPageLink = action.payload.nextPageLink;
+          state.items = [
+            ...state.items,
+            ...searchResultsToStateItems(action.payload.searchResults),
+          ].map((item, index) => ({ ...item, index }));
+        }
+      );
   },
 });
 
 export const fetchItems = createAsyncThunk(
   "entries/fetchItems",
-  (args: SearchState) => {
+  async (args: SearchState) => {
     let filteredQuery = args.query;
 
     if (args?.filters?.gene) {
@@ -121,9 +166,34 @@ export const fetchItems = createAsyncThunk(
 
     filteredQuery = encodeURI(filteredQuery);
 
-    return fetch(
+    const response = await fetch(
       `https://rest.uniprot.org/uniprotkb/search?fields=accession,reviewed,id,protein_name,gene_names,organism_name,length,ft_peptide,cc_subcellular_location&query=${filteredQuery}&size=50`
-    ).then((response) => response.json());
+    );
+
+    const matches = response.headers?.get("Link")?.match(/<.*>/);
+    const link = matches?.length ? matches[0].slice(1, -1) : null;
+    const data = await response.json();
+
+    return { searchResults: data, nextPageLink: link };
+  }
+);
+
+export const fetchNextItems = createAsyncThunk(
+  "entries/fetchNextItems",
+  async (_, thunkApi) => {
+    const state = thunkApi.getState() as RootState;
+
+    if (!state.entries.nextPageLink) {
+      throw new Error("Next page link is empty!");
+    }
+
+    const response = await fetch(state.entries.nextPageLink);
+
+    const matches = response.headers?.get("Link")?.match(/<.*>/);
+    const link = matches?.length ? matches[0].slice(1, -1) : null;
+    const data = await response.json();
+
+    return { searchResults: data, nextPageLink: link };
   }
 );
 
@@ -133,5 +203,7 @@ export const selectItems = (state: RootState) => state.entries.items;
 export const selectSearchQuery = (state: RootState) =>
   state.entries.search.query;
 export const selectFilters = (state: RootState) => state.entries.search.filters;
+export const selectIsSearchRunning = (state: RootState) =>
+  state.entries.isSearchRunning;
 
 export const entriesReducer = entriesSlice.reducer;
