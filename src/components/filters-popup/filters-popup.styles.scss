@@ -54,6 +54,26 @@
         margin-left: 2px;
     }
 
+    .ant-select .ant-select-selector {
+        display: flex;
+        align-items: center;
+        background: #F5F5F5;
+        border-radius: 8px;
+        font-family: 'Open Sans', sans-serif;
+        color: #2B2B2B;
+        border: 2px solid transparent;
+        height: 3.785em;
+        padding: 15px 14px 14px 14px; 
+    }
+    // .ant-select-selector:focus {
+    //     border: 2px solid #3C86F4;
+    //     background-color: #ffffff;
+    // }
+
+    .ant-select-selection-placeholder {
+        color: #6C6C6C;
+    }
+
     .filters-select {
         background: #F5F5F5;
         border-radius: 8px;

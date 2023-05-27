@@ -4,8 +4,6 @@ import { useSearchParams } from "react-router-dom";
 import { Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
-import { ReactComponent as FiltersIcon } from "../../assets/filters.svg";
-import { ReactComponent as SortIcon } from "../../assets/sortIcon.svg";
 import Button, { ButtonType } from "../../components/button/button.component";
 import FiltersPopup from "../../components/filters-popup/filters-popup.component";
 import {
@@ -18,6 +16,9 @@ import {
   setSearchQuery,
 } from "../../store/slices/entries.slice";
 import { AppDispatch } from "../../store/store";
+
+import { ReactComponent as FiltersIcon } from "../../assets/filters.svg";
+import { ReactComponent as SortIcon } from "../../assets/sortIcon.svg";
 
 import "./search-page.style.scss";
 
@@ -84,9 +85,13 @@ const SearchPage = () => {
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      dispatch(setSearchQuery(searchQuery || "*"));
+      const newSearchQuery = (
+        event.currentTarget.elements.namedItem("search") as HTMLInputElement
+      ).value;
+
+      dispatch(setSearchQuery(newSearchQuery || "*"));
     },
-    [dispatch, searchQuery]
+    [dispatch]
   );
 
   const showSearchResultsTitle = () => {
@@ -182,6 +187,7 @@ const SearchPage = () => {
       <form className="search-page-form" onSubmit={onSearch}>
         <input
           type="search"
+          name="search"
           className="input-search"
           placeholder="Enter search value"
           ref={searchRef}
