@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Select } from "antd";
 
-import { ReactComponent as DashIcon } from "../../assets/dash.svg";
 import {
   selectFilters,
   selectSearchQuery,
@@ -10,6 +10,9 @@ import {
 import { AppDispatch } from "../../store/store";
 import Button, { ButtonType } from "../button/button.component";
 import FormInput from "../form-input/form-input.component";
+
+import { ReactComponent as DashIcon } from "../../assets/dash.svg";
+import { ReactComponent as ArrowIcon } from "../../assets/selectIcon.svg";
 
 import "./filters-popup.styles.scss";
 
@@ -22,6 +25,33 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
   const searchQuery = useSelector(selectSearchQuery);
   const dispatch = useDispatch<AppDispatch>();
   const filters = useSelector(selectFilters);
+  const [isOrganismLoading, setIsOrganismLoading] = useState(false);
+  const [isScoreLoading, setIsScoreLoading] = useState(false);
+  const [isProteinLoading, setIsProteinLoading] = useState(false);
+  const [geneName, setGeneName] = useState(filters?.gene);
+  const [seqLenFrom, setSeqLenFrom] = useState(filters?.sequence?.from);
+  const [seqLenTo, setSeqLenTo] = useState(filters?.sequence?.to);
+
+  const [selectedOrganism, setSelectedOrganism] = useState<Filter | null>(
+    filters?.organism
+      ? {
+          label: filters?.organism?.name,
+          value: filters?.organism?.id,
+        }
+      : null
+  );
+
+  const [selectedScore, setSelectedScore] = useState<Filter | null>(
+    filters?.annotationScore
+      ? { label: filters.annotationScore, value: filters.annotationScore }
+      : null
+  );
+
+  const [selectedProtein, setSelectedProtein] = useState<Filter | null>(
+    filters?.proteinWith
+      ? { label: filters.proteinWith.name, value: filters.proteinWith.id }
+      : null
+  );
 
   const [organisms, setOrganisms] = useState<Filter[]>([
     {
@@ -45,104 +75,88 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
   ]);
 
   const handleOrganismLoading = () => {
+    setOrganisms([]);
+    setIsOrganismLoading(true);
+
     return fetch(
       ` https://rest.uniprot.org/uniprotkb/search?facets=model_organism&query=${searchQuery}`
     )
       .then((response) => response.json())
-      .then((results) => setOrganisms(results.facets[0].values));
+      .then((results) => {
+        setOrganisms(results.facets[0].values);
+        setIsOrganismLoading(false);
+
+        return;
+      });
   };
 
   const handleAnnotationScoreLoading = () => {
+    setAnnotationScores([]);
+    setIsScoreLoading(true);
+
     return fetch(
       ` https://rest.uniprot.org/uniprotkb/search?facets=annotation_score&query=${searchQuery}`
     )
       .then((response) => response.json())
-      .then((results) =>
+      .then((results) => {
         setAnnotationScores(
           results.facets[0].values.map((item: { value: string }) => ({
             value: item.value,
             label: item.value,
           }))
-        )
-      );
+        );
+        setIsScoreLoading(false);
+
+        return;
+      });
   };
 
   const handleProteinWithLoading = () => {
+    setProteinsWith([]);
+    setIsProteinLoading(true);
+
     return fetch(
       ` https://rest.uniprot.org/uniprotkb/search?facets=proteins_with&query=${searchQuery}`
     )
       .then((response) => response.json())
-      .then((results) => setProteinsWith(results.facets[0].values));
+      .then((results) => {
+        setProteinsWith(results.facets[0].values);
+        setIsProteinLoading(false);
+
+        return;
+      });
+  };
+
+  const convertInputToFilters = () => {
+    return {
+      gene: geneName,
+      organism: {
+        name: selectedOrganism?.label,
+        id: selectedOrganism?.value,
+      },
+      sequence: {
+        from: seqLenFrom,
+        to: seqLenTo,
+      },
+      annotationScore: selectedScore?.value,
+      proteinWith: {
+        name: selectedProtein?.label,
+        id: selectedProtein?.value,
+      },
+    };
   };
 
   const applyFilters = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formElements = event.currentTarget.elements;
-
-    const getFormElement = <ElementType extends HTMLElement>(name: string) => {
-      return formElements.namedItem(name) as ElementType;
-    };
-
-    const geneValue = getFormElement<HTMLInputElement>("geneName").value;
-
-    const { selectedIndex: organismIndex, options: organismOptions } =
-      getFormElement<HTMLSelectElement>("organism");
-
-    const { value: organismValue, text: organismName } =
-      organismIndex !== 0
-        ? organismOptions[organismIndex]
-        : { value: "", text: "" };
-
-    const sequenceLengthFromValue = Number.parseInt(
-      getFormElement<HTMLInputElement>("sequenceFrom").value
-    );
-
-    const sequenceLengthToValue = Number.parseInt(
-      getFormElement<HTMLInputElement>("sequenceTo").value
-    );
-
-    const annotationScoreValue =
-      getFormElement<HTMLSelectElement>("annotationScore").value;
-
-    const { selectedIndex: proteinWithIndex, options: proteinWithOptions } =
-      getFormElement<HTMLSelectElement>("proteinWith");
-
-    const { value: proteinWithValue, text: proteinWithName } =
-      proteinWithIndex !== 0
-        ? proteinWithOptions[proteinWithIndex]
-        : { value: "", text: "" };
-
-    // dispatch(
-    //   fetchItems({
-    //     query: searchQuery,
-    //     filters: {
-    //       gene: geneValue,
-    //       organism: organismValue,
-    //       sequence: {
-    //         from: sequenceLengthFromValue,
-    //         to: sequenceLengthToValue,
-    //       },
-    //       annotationScore: annotationScoreValue,
-    //       proteinWith: proteinWithValue,
-    //     },
-    //   })
-    // );
-    dispatch(
-      setFilters({
-        gene: geneValue,
-        organism: { name: organismName, id: organismValue },
-        sequence: {
-          from: sequenceLengthFromValue,
-          to: sequenceLengthToValue,
-        },
-        annotationScore: annotationScoreValue,
-        proteinWith: { name: proteinWithName, id: proteinWithValue },
-      })
-    );
+    dispatch(setFilters(convertInputToFilters()));
 
     onClose();
   };
+
+  console.log("spinner:", [
+    isProteinLoading
+  ]);
 
   return (
     <div className="filters-container">
@@ -155,31 +169,31 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           id="geneName"
           name="geneName"
           styleClasses="form-input-distance"
-          defaultValue={filters?.gene}
-          //defaultValue={searchParams.get("geneValue") || ""}
+          defaultValue={geneName}
+          onChange={(event) => setGeneName(event.currentTarget.value)}
         />
 
         <div className="select-container form-input-distance">
           <label htmlFor="organism" className="filters-label">
             {"Organism"}
           </label>
-          <select
-            id="organism"
-            name="organism"
-            className="filters-select"
-            //defaultValue={searchParams.get("organismValue") || ""}
+          <Select
             defaultValue={filters?.organism?.id}
-            onClick={handleOrganismLoading}
-          >
-            <option value="" key={0}>
-              {"Select an option\r"}
-            </option>
-            {organisms.map((organism) => (
-              <option key={organism.value} value={organism.value}>
-                {organism.label}
-              </option>
-            ))}
-          </select>
+            onDropdownVisibleChange={handleOrganismLoading}
+            placeholder="Select an option"
+            options={organisms}
+            loading={isOrganismLoading}
+            allowClear
+            suffixIcon={!isOrganismLoading ? <ArrowIcon /> : undefined}
+            onSelect={(value) => {
+              setSelectedOrganism({
+                value,
+                label: organisms.find(({ value: v }) => v === value)
+                  ?.label as string,
+              });
+            }}
+            onClear={() => setSelectedOrganism(null)}
+          />
         </div>
 
         <div className="form-input-distance">
@@ -193,8 +207,14 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
               id="sequenceFrom"
               name="sequenceFrom"
               styleClasses="sequence-input"
-              //defaultValue={searchParams.get("sequenceLengthFromValue") || ""}
-              defaultValue={filters?.sequence?.from}
+              defaultValue={seqLenFrom}
+              onChange={(event) =>
+                setSeqLenFrom(
+                  event.currentTarget.value === ""
+                    ? undefined
+                    : +event.currentTarget.value
+                )
+              }
             />
             <DashIcon />
             <FormInput
@@ -203,8 +223,14 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
               id="sequenceTo"
               name="sequenceTo"
               styleClasses="sequence-input"
-              //defaultValue={searchParams.get("sequenceLengthToValue") || ""}
-              defaultValue={filters?.sequence?.to}
+              defaultValue={seqLenTo}
+              onChange={(event) =>
+                setSeqLenTo(
+                  event.currentTarget.value === ""
+                    ? undefined
+                    : +event.currentTarget.value
+                )
+              }
             />
           </div>
         </div>
@@ -213,46 +239,46 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           <label htmlFor="annotationScore" className="filters-label">
             {"Annotation score"}
           </label>
-          <select
-            id="annotationScore"
-            name="annotationScore"
-            className="filters-select"
-            //defaultValue={searchParams.get("annotationScoreValue") || ""}
+          <Select
             defaultValue={filters?.annotationScore}
-            onClick={handleAnnotationScoreLoading}
-          >
-            <option value="" key={0}>
-              {"Select an option\r"}
-            </option>
-            {annotationScores.map((score) => (
-              <option key={score.value} value={score.value}>
-                {score.label}
-              </option>
-            ))}
-          </select>
+            onDropdownVisibleChange={handleAnnotationScoreLoading}
+            placeholder="Select an option"
+            options={annotationScores}
+            loading={isScoreLoading}
+            allowClear
+            suffixIcon={!isScoreLoading ? <ArrowIcon /> : undefined}
+            onClear={() => setSelectedScore(null)}
+            onSelect={(value) => {
+              setSelectedScore({
+                value,
+                label: annotationScores.find(({ value: v }) => v === value)
+                  ?.label as string,
+              });
+            }}
+          />
         </div>
 
         <div className="select-container form-input-distance">
           <label htmlFor="proteinWith" className="filters-label">
             {"Protein with"}
           </label>
-          <select
-            id="proteinWith"
-            name="proteinWith"
-            className="filters-select"
-            //defaultValue={searchParams.get("proteinWithValue") || ""}
+          <Select
             defaultValue={filters?.proteinWith?.id}
-            onClick={handleProteinWithLoading}
-          >
-            <option value="" key={0}>
-              {"Select\r"}
-            </option>
-            {proteinsWith.map((protein) => (
-              <option key={protein.value} value={protein.value}>
-                {protein.label}
-              </option>
-            ))}
-          </select>
+            onDropdownVisibleChange={handleProteinWithLoading}
+            placeholder="Select an option"
+            options={proteinsWith}
+            loading={isProteinLoading}
+            allowClear
+            suffixIcon={!isProteinLoading ? <ArrowIcon /> : undefined}
+            onClear={() => setSelectedProtein(null)}
+            onSelect={(value) => {
+              setSelectedProtein({
+                value,
+                label: proteinsWith.find(({ value: v }) => v === value)
+                  ?.label as string,
+              });
+            }}
+          />
         </div>
 
         <div className="buttons-container">
@@ -268,6 +294,16 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
             buttonType={ButtonType.BASE}
             styleClasses="filters-btn"
             type="submit"
+            disabled={[
+              geneName,
+              selectedOrganism?.value,
+              seqLenFrom,
+              seqLenTo,
+              selectedScore?.value,
+              selectedProtein?.value,
+            ].every((v) =>
+              [null, undefined, ""].includes(v as null | undefined | string)
+            )}
           >
             {"Apply filters"}
           </Button>

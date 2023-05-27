@@ -106,7 +106,6 @@ export const fetchItems = createAsyncThunk(
       args?.filters?.sequence &&
       (args.filters.sequence.from || args.filters.sequence.to)
     ) {
-      
       filteredQuery += ` AND (length:[${args.filters.sequence.from || "*"} TO ${
         args.filters.sequence.to || "*"
       }])`;
@@ -123,7 +122,7 @@ export const fetchItems = createAsyncThunk(
     filteredQuery = encodeURI(filteredQuery);
 
     return fetch(
-      `https://rest.uniprot.org/uniprotkb/search?fields=accession,reviewed,id,protein_name,gene_names,organism_name,length,ft_peptide,cc_subcellular_location&query=${filteredQuery}`
+      `https://rest.uniprot.org/uniprotkb/search?fields=accession,reviewed,id,protein_name,gene_names,organism_name,length,ft_peptide,cc_subcellular_location&query=${filteredQuery}&size=50`
     ).then((response) => response.json());
   }
 );
