@@ -28,6 +28,9 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
   const [isOrganismLoading, setIsOrganismLoading] = useState(false);
   const [isScoreLoading, setIsScoreLoading] = useState(false);
   const [isProteinLoading, setIsProteinLoading] = useState(false);
+  const [geneName, setGeneName] = useState(filters?.gene);
+  const [seqLenFrom, setSeqLenFrom] = useState(filters?.sequence?.from);
+  const [seqLenTo, setSeqLenTo] = useState(filters?.sequence?.to);
 
   const [selectedOrganism, setSelectedOrganism] = useState<Filter | null>(
     filters?.organism
@@ -72,6 +75,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
   ]);
 
   const handleOrganismLoading = () => {
+    setOrganisms([]);
     setIsOrganismLoading(true);
 
     return fetch(
@@ -81,10 +85,13 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
       .then((results) => {
         setOrganisms(results.facets[0].values);
         setIsOrganismLoading(false);
+
+        return;
       });
   };
 
   const handleAnnotationScoreLoading = () => {
+    setAnnotationScores([]);
     setIsScoreLoading(true);
 
     return fetch(
@@ -99,10 +106,13 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           }))
         );
         setIsScoreLoading(false);
+
+        return;
       });
   };
 
   const handleProteinWithLoading = () => {
+    setProteinsWith([]);
     setIsProteinLoading(true);
 
     return fetch(
@@ -112,49 +122,41 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
       .then((results) => {
         setProteinsWith(results.facets[0].values);
         setIsProteinLoading(false);
+
+        return;
       });
+  };
+
+  const convertInputToFilters = () => {
+    return {
+      gene: geneName,
+      organism: {
+        name: selectedOrganism?.label,
+        id: selectedOrganism?.value,
+      },
+      sequence: {
+        from: seqLenFrom,
+        to: seqLenTo,
+      },
+      annotationScore: selectedScore?.value,
+      proteinWith: {
+        name: selectedProtein?.label,
+        id: selectedProtein?.value,
+      },
+    };
   };
 
   const applyFilters = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formElements = event.currentTarget.elements;
-
-    const getFormElement = <ElementType extends HTMLElement>(name: string) => {
-      return formElements.namedItem(name) as ElementType;
-    };
-
-    const geneValue = getFormElement<HTMLInputElement>("geneName").value;
-
-    const sequenceLengthFromValue = Number.parseInt(
-      getFormElement<HTMLInputElement>("sequenceFrom").value
-    );
-
-    const sequenceLengthToValue = Number.parseInt(
-      getFormElement<HTMLInputElement>("sequenceTo").value
-    );
-
-    dispatch(
-      setFilters({
-        gene: geneValue,
-        organism: {
-          name: selectedOrganism?.label,
-          id: selectedOrganism?.value,
-        },
-        sequence: {
-          from: sequenceLengthFromValue,
-          to: sequenceLengthToValue,
-        },
-        annotationScore: selectedScore?.value,
-        proteinWith: {
-          name: selectedProtein?.label,
-          id: selectedProtein?.value,
-        },
-      })
-    );
+    dispatch(setFilters(convertInputToFilters()));
 
     onClose();
   };
+
+  console.log("spinner:", [
+    isProteinLoading
+  ]);
 
   return (
     <div className="filters-container">
@@ -167,7 +169,8 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           id="geneName"
           name="geneName"
           styleClasses="form-input-distance"
-          defaultValue={filters?.gene}
+          defaultValue={geneName}
+          onChange={(event) => setGeneName(event.currentTarget.value)}
         />
 
         <div className="select-container form-input-distance">
@@ -204,7 +207,14 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
               id="sequenceFrom"
               name="sequenceFrom"
               styleClasses="sequence-input"
-              defaultValue={filters?.sequence?.from}
+              defaultValue={seqLenFrom}
+              onChange={(event) =>
+                setSeqLenFrom(
+                  event.currentTarget.value === ""
+                    ? undefined
+                    : +event.currentTarget.value
+                )
+              }
             />
             <DashIcon />
             <FormInput
@@ -213,7 +223,14 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
               id="sequenceTo"
               name="sequenceTo"
               styleClasses="sequence-input"
-              defaultValue={filters?.sequence?.to}
+              defaultValue={seqLenTo}
+              onChange={(event) =>
+                setSeqLenTo(
+                  event.currentTarget.value === ""
+                    ? undefined
+                    : +event.currentTarget.value
+                )
+              }
             />
           </div>
         </div>
@@ -277,6 +294,16 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
             buttonType={ButtonType.BASE}
             styleClasses="filters-btn"
             type="submit"
+            disabled={[
+              geneName,
+              selectedOrganism?.value,
+              seqLenFrom,
+              seqLenTo,
+              selectedScore?.value,
+              selectedProtein?.value,
+            ].every((v) =>
+              [null, undefined, ""].includes(v as null | undefined | string)
+            )}
           >
             {"Apply filters"}
           </Button>
