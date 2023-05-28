@@ -1,15 +1,25 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { Space, Table, Tag } from "antd";
+import { Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 import Button, { ButtonType } from "../../components/button/button.component";
 import FiltersPopup from "../../components/filters-popup/filters-popup.component";
+import InfiniteScroll from "../../components/infinite-scroll/infinite-scroll.component";
 import {
   fetchItems,
+  fetchNextItems,
   SearchItem,
   selectFilters,
+  selectIsSearchRunning,
   selectItems,
   selectSearchQuery,
   setFilters,
@@ -30,6 +40,8 @@ const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = useSelector(selectSearchQuery);
   const filters = useSelector(selectFilters);
+  const isSearchRunning = useSelector(selectIsSearchRunning);
+  const [resetScroll, setResetScroll] = useState(false);
 
   useEffect(() => {
     dispatch(setSearchQuery(searchParams.get("query") || ""));
@@ -54,7 +66,14 @@ const SearchPage = () => {
   }, [dispatch, searchParams]);
 
   useEffect(() => {
+    if (resetScroll && !isSearchRunning) {
+      setResetScroll(false);
+    }
+  }, [isSearchRunning, resetScroll]);
+
+  useEffect(() => {
     dispatch(fetchItems({ query: searchQuery, filters }));
+    setResetScroll(true);
 
     const queryString = {
       query: searchQuery,
@@ -110,77 +129,87 @@ const SearchPage = () => {
     }
   };
 
-  const columns: ColumnsType<SearchItem> = [
-    {
-      title: "#",
-      dataIndex: "index",
-    },
-    {
-      title: (
-        <Fragment>
-          {"Entry"}
-          <SortIcon />
-        </Fragment>
-      ),
-      dataIndex: "accession",
-      sorter: true,
-    },
-    {
-      title: (
-        <Fragment>
-          {"Entry Names"}
-          <SortIcon />
-        </Fragment>
-      ),
-      dataIndex: "id",
-      sorter: true,
-    },
-    {
-      title: (
-        <Fragment>
-          {"Genes"}
-          <SortIcon />
-        </Fragment>
-      ),
-      dataIndex: "geneNames",
-      sorter: true,
-      render: (_, record) => record.geneNames.join(", "),
-    },
-    {
-      title: (
-        <Fragment>
-          {"Organism"}
-          <SortIcon />
-        </Fragment>
-      ),
-      dataIndex: "organismName",
-      sorter: true,
-      width: "20%",
-      render: (text, _, index) => <Tag key={`${text}-${index}`}>{text}</Tag>,
-    },
-    {
-      title: (
-        <Fragment>
-          {"Subcellular Location"}
-          <SortIcon />
-        </Fragment>
-      ),
-      dataIndex: "ccSubcellularLocation",
-      sorter: true,
-      width: "30%",
-      render: (_, record) => record.ccSubcellularLocation.join(", "),
-    },
-    {
-      title: (
-        <Fragment>
-          {"Length"}
-          <SortIcon />
-        </Fragment>
-      ),
-      dataIndex: "length",
-      sorter: true,
-    },
-  ];
+  const columns: ColumnsType<SearchItem> = useMemo(
+    () => [
+      {
+        title: "#",
+        dataIndex: "index",
+        key: "1",
+      },
+      {
+        title: (
+          <Fragment>
+            {"Entry"}
+            <SortIcon />
+          </Fragment>
+        ),
+        dataIndex: "accession",
+        key: "2",
+        sorter: true,
+      },
+      {
+        title: (
+          <Fragment>
+            {"Entry Names"}
+            <SortIcon />
+          </Fragment>
+        ),
+        dataIndex: "id",
+        key: "3",
+        sorter: true,
+      },
+      {
+        title: (
+          <Fragment>
+            {"Genes"}
+            <SortIcon />
+          </Fragment>
+        ),
+        dataIndex: "geneNames",
+        sorter: true,
+        key: "4",
+        render: (_, record) => record.geneNames.join(", "),
+      },
+      {
+        title: (
+          <Fragment>
+            {"Organism"}
+            <SortIcon />
+          </Fragment>
+        ),
+        dataIndex: "organismName",
+        sorter: true,
+        width: "20%",
+        key: "5",
+        render: (text, _, index) => <Tag key={`${text}-${index}`}>{text}</Tag>,
+      },
+      {
+        title: (
+          <Fragment>
+            {"Subcellular Location"}
+            <SortIcon />
+          </Fragment>
+        ),
+        dataIndex: "ccSubcellularLocation",
+        sorter: true,
+        width: "30%",
+        key: "6",
+        render: (_, record) => record.ccSubcellularLocation.join(", "),
+      },
+      {
+        title: (
+          <Fragment>
+            {"Length"}
+            <SortIcon />
+          </Fragment>
+        ),
+        dataIndex: "length",
+        key: "7",
+        sorter: true,
+      },
+    ],
+    []
+  );
 
   return (
     <div className="search-page-container">
@@ -210,13 +239,25 @@ const SearchPage = () => {
       {showSearchResultsTitle()}
 
       {items.length > 0 ? (
-        <Table
-          columns={columns}
-          dataSource={items}
-          className="table-container"
-          scroll={{ x: true, y: "calc(100vh - 16.5em)" }}
-          pagination={false}
-        />
+        <Fragment>
+          <Table
+            id="mytable"
+            columns={columns}
+            dataSource={items}
+            className="table-container"
+            scroll={{
+              x: true,
+              y: "calc(100vh - 16.5em)",
+              scrollToFirstRowOnChange: true,
+            }}
+            pagination={false}
+            loading={isSearchRunning}
+          />
+          <InfiniteScroll
+            loadMore={() => dispatch(fetchNextItems())}
+            reset={resetScroll}
+          />
+        </Fragment>
       ) : (
         <p className="no-data-placeholder">
           {"No data to display"}
