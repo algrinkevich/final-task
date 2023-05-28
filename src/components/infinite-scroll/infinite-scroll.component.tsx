@@ -13,7 +13,7 @@ const InfiniteScroll = ({
       const maxScroll = table?.scrollHeight - table?.clientHeight;
       const currentScroll = table?.scrollTop;
 
-      if (currentScroll === maxScroll) {
+      if (currentScroll >= maxScroll - 10) {
         loadMore();
       }
     },
