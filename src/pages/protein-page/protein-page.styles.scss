@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+
+.protein-page-container {
+    padding: 1.875em 8.125em 0 8.125em;
+
+    .title-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .protein-title {
+            margin: 0;
+            font-weight: 600;
+            font-size: 22px;
+            line-height: 30px;
+            color: #000000;
+            margin-right: 0.6em;
+        }
+    }
+
+    .protein-info-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4375em;
+        margin: 0.75em 0;
+
+        .info-block {
+            display: flex;
+            flex-direction: column;
+
+            .info-title {
+                font-weight: 600;
+                font-size: 12px;
+                line-height: 1.33em;
+                color: #616161;
+            }
+
+            .info-description {
+                font-weight: 400;
+                font-size: 12px;
+                line-height: 1.33em;
+                color: #2B2B2B;
+            }
+        }
+    }
+
+    .ant-tabs-nav:before{
+        border: none;
+    }
+    .ant-tabs-ink-bar {
+        background-color: #3C86F4;
+    }
+
+    .ant-tabs-tab-active .ant-tabs-tab-btn {
+        color: #3C86F4 !important;
+    }
+
+    .ant-tabs-tab-btn {
+        color: #9f9f9f !important;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+    }
+
+    .ant-tabs-tab {
+        padding: 0.5em 1.642em;
+    }
+}

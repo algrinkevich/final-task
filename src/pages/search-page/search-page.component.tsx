@@ -8,13 +8,14 @@ import {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { Table, Tag, Tooltip } from "antd";
+import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 import Button, { ButtonType } from "../../components/button/button.component";
 import FiltersPopup from "../../components/filters-popup/filters-popup.component";
 import InfiniteScroll from "../../components/infinite-scroll/infinite-scroll.component";
 import SortIcon from "../../components/sort-icon/sort-icon-component";
+import Tag from "../../components/tag/tag.component";
 import {
   fetchItems,
   fetchNextItems,
@@ -238,9 +239,7 @@ const SearchPage = () => {
         key: "5",
         sortOrder: getSortOrder("organismName"),
         render: (text, _, index) => (
-          <Tooltip title={text}>
-            <Tag key={`${text}-${index}`}>{text}</Tag>
-          </Tooltip>
+          <Tag key={`${text}-${index}`} text={text} />
         ),
       },
       {
