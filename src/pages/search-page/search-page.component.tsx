@@ -8,12 +8,13 @@ import {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { Table, Tag } from "antd";
+import { Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 import Button, { ButtonType } from "../../components/button/button.component";
 import FiltersPopup from "../../components/filters-popup/filters-popup.component";
 import InfiniteScroll from "../../components/infinite-scroll/infinite-scroll.component";
+import SortIcon from "../../components/sort-icon/sort-icon-component";
 import {
   fetchItems,
   fetchNextItems,
@@ -22,18 +23,20 @@ import {
   selectIsSearchRunning,
   selectItems,
   selectSearchQuery,
+  selectSorting,
   setFilters,
   setSearchQuery,
+  setSorting,
 } from "../../store/slices/entries.slice";
 import { AppDispatch } from "../../store/store";
 
 import { ReactComponent as FiltersIcon } from "../../assets/filters.svg";
-import { ReactComponent as SortIcon } from "../../assets/sortIcon.svg";
 
 import "./search-page.style.scss";
 
 const SearchPage = () => {
   const [showFilters, setShowFilters] = useState(false);
+  const [resetScroll, setResetScroll] = useState(false);
   const items = useSelector(selectItems);
   const dispatch = useDispatch<AppDispatch>();
   const searchRef = useRef<HTMLInputElement | null>(null);
@@ -41,7 +44,7 @@ const SearchPage = () => {
   const searchQuery = useSelector(selectSearchQuery);
   const filters = useSelector(selectFilters);
   const isSearchRunning = useSelector(selectIsSearchRunning);
-  const [resetScroll, setResetScroll] = useState(false);
+  const sorting = useSelector(selectSorting);
 
   useEffect(() => {
     dispatch(setSearchQuery(searchParams.get("query") || ""));
@@ -63,6 +66,12 @@ const SearchPage = () => {
         },
       })
     );
+    dispatch(
+      setSorting({
+        field: searchParams.get("sortKey"),
+        direction: searchParams.get("sortDir"),
+      })
+    );
   }, [dispatch, searchParams]);
 
   useEffect(() => {
@@ -72,7 +81,7 @@ const SearchPage = () => {
   }, [isSearchRunning, resetScroll]);
 
   useEffect(() => {
-    dispatch(fetchItems({ query: searchQuery, filters }));
+    dispatch(fetchItems({ query: searchQuery, filters, sort: sorting }));
     setResetScroll(true);
 
     const queryString = {
@@ -89,6 +98,8 @@ const SearchPage = () => {
       annotationScoreValue: filters?.annotationScore,
       proteinWithValue: filters?.proteinWith?.id,
       proteinWithName: filters?.proteinWith?.name,
+      sortKey: sorting?.field,
+      sortDir: sorting?.direction,
     };
 
     const cleanedUpQueryString = Object.fromEntries(
@@ -98,7 +109,7 @@ const SearchPage = () => {
     };
 
     setSearchParams(cleanedUpQueryString);
-  }, [searchQuery, dispatch, filters, setSearchParams]);
+  }, [searchQuery, dispatch, filters, setSearchParams, sorting]);
 
   const onSearch = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
@@ -129,86 +140,135 @@ const SearchPage = () => {
     }
   };
 
+  const convertToSorting = (
+    fieldName: string,
+    direction: string | null | undefined
+  ) => {
+    return {
+      field: fieldName,
+      direction: direction === "descend" ? "desc" : "asc",
+    };
+  };
+
+  const getSortOrder = useCallback(
+    (fieldName: string) => {
+      if (sorting?.field !== fieldName) {
+        return;
+      }
+
+      if (sorting.direction === "asc") {
+        return "ascend";
+      } else if (sorting.direction === "desc") {
+        return "descend";
+      }
+
+      return;
+    },
+    [sorting]
+  );
+
   const columns: ColumnsType<SearchItem> = useMemo(
     () => [
       {
         title: "#",
         dataIndex: "index",
         key: "1",
+        width: "5%",
       },
       {
         title: (
-          <Fragment>
+          <SortIcon
+            direction={
+              sorting?.field === "accession" ? sorting?.direction : undefined
+            }
+          >
             {"Entry"}
-            <SortIcon />
-          </Fragment>
+          </SortIcon>
         ),
         dataIndex: "accession",
         key: "2",
         sorter: true,
+        sortOrder: getSortOrder("accession"),
+        width: "10%",
       },
       {
         title: (
-          <Fragment>
+          <SortIcon
+            direction={sorting?.field === "id" ? sorting?.direction : undefined}
+          >
             {"Entry Names"}
-            <SortIcon />
-          </Fragment>
+          </SortIcon>
         ),
         dataIndex: "id",
         key: "3",
         sorter: true,
+        sortOrder: getSortOrder("id"),
+        width: "10%",
       },
       {
         title: (
-          <Fragment>
+          <SortIcon
+            direction={
+              sorting?.field === "geneNames" ? sorting?.direction : undefined
+            }
+          >
             {"Genes"}
-            <SortIcon />
-          </Fragment>
+          </SortIcon>
         ),
         dataIndex: "geneNames",
         sorter: true,
+        sortOrder: getSortOrder("geneNames"),
         key: "4",
+        width: "10%",
         render: (_, record) => record.geneNames.join(", "),
       },
       {
         title: (
-          <Fragment>
+          <SortIcon
+            direction={
+              sorting?.field === "organismName" ? sorting?.direction : undefined
+            }
+          >
             {"Organism"}
-            <SortIcon />
-          </Fragment>
+          </SortIcon>
         ),
         dataIndex: "organismName",
         sorter: true,
-        width: "20%",
+        width: "10%",
         key: "5",
-        render: (text, _, index) => <Tag key={`${text}-${index}`}>{text}</Tag>,
+        sortOrder: getSortOrder("organismName"),
+        render: (text, _, index) => (
+          <Tooltip title={text}>
+            <Tag key={`${text}-${index}`}>{text}</Tag>
+          </Tooltip>
+        ),
       },
       {
-        title: (
-          <Fragment>
-            {"Subcellular Location"}
-            <SortIcon />
-          </Fragment>
-        ),
+        title: "Subcellular Location",
         dataIndex: "ccSubcellularLocation",
-        sorter: true,
-        width: "30%",
+        sorter: false,
+        width: "25%",
         key: "6",
         render: (_, record) => record.ccSubcellularLocation.join(", "),
       },
       {
         title: (
-          <Fragment>
+          <SortIcon
+            direction={
+              sorting?.field === "length" ? sorting?.direction : undefined
+            }
+          >
             {"Length"}
-            <SortIcon />
-          </Fragment>
+          </SortIcon>
         ),
         dataIndex: "length",
         key: "7",
         sorter: true,
+        sortOrder: getSortOrder("length"),
+        width: "10%",
       },
     ],
-    []
+    [sorting, getSortOrder]
   );
 
   return (
@@ -252,6 +312,18 @@ const SearchPage = () => {
             }}
             pagination={false}
             loading={isSearchRunning}
+            onChange={(_, __, sorter) => {
+              dispatch(
+                setSorting(
+                  (sorter as { order: string | undefined }).order
+                    ? convertToSorting(
+                        (sorter as { field: string }).field,
+                        (sorter as { order: string }).order
+                      )
+                    : null
+                )
+              );
+            }}
           />
           <InfiniteScroll
             loadMore={() => dispatch(fetchNextItems())}

@@ -154,10 +154,6 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
     onClose();
   };
 
-  console.log("spinner:", [
-    isProteinLoading
-  ]);
-
   return (
     <div className="filters-container">
       <h3>{"Filters"}</h3>

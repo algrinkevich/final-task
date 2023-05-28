@@ -50,6 +50,10 @@ interface SearchState {
     annotationScore?: string;
     proteinWith?: { name: string; id: string };
   };
+  sort?: {
+    field: string;
+    direction: "asc" | "desc";
+  };
 }
 
 const INITIAL_STATE: EntriesState = {
@@ -85,6 +89,9 @@ export const entriesSlice = createSlice({
     },
     setFilters(state, action) {
       state.search.filters = action.payload;
+    },
+    setSorting(state, action) {
+      state.search.sort = { ...action.payload };
     },
   },
   extraReducers(builder) {
@@ -166,8 +173,20 @@ export const fetchItems = createAsyncThunk(
 
     filteredQuery = encodeURI(filteredQuery);
 
+    let sortParams = "";
+
+    if (args.sort?.field) {
+      const field =
+        {
+          organismName: "organism_name",
+          geneNames: "gene",
+        }[args.sort?.field] || args.sort?.field;
+
+      sortParams = `&sort=${field} ${args.sort?.direction}`;
+    }
+
     const response = await fetch(
-      `https://rest.uniprot.org/uniprotkb/search?fields=accession,reviewed,id,protein_name,gene_names,organism_name,length,ft_peptide,cc_subcellular_location&query=${filteredQuery}&size=50`
+      `https://rest.uniprot.org/uniprotkb/search?fields=accession,reviewed,id,protein_name,gene_names,organism_name,length,ft_peptide,cc_subcellular_location&query=${filteredQuery}&size=50${sortParams}`
     );
 
     const matches = response.headers?.get("Link")?.match(/<.*>/);
@@ -197,7 +216,7 @@ export const fetchNextItems = createAsyncThunk(
   }
 );
 
-export const { setSearchQuery, setFilters } = entriesSlice.actions;
+export const { setSearchQuery, setFilters, setSorting } = entriesSlice.actions;
 
 export const selectItems = (state: RootState) => state.entries.items;
 export const selectSearchQuery = (state: RootState) =>
@@ -205,5 +224,6 @@ export const selectSearchQuery = (state: RootState) =>
 export const selectFilters = (state: RootState) => state.entries.search.filters;
 export const selectIsSearchRunning = (state: RootState) =>
   state.entries.isSearchRunning;
+export const selectSorting = (state: RootState) => state.entries.search.sort;
 
 export const entriesReducer = entriesSlice.reducer;

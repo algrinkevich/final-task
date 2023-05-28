@@ -20,8 +20,8 @@
             padding-left: 1.143em;
             padding-right: 1.571em;
             outline: none;
-    
-            &::placeholder { 
+
+            &::placeholder {
                 color: #9F9F9F;
             }
 
@@ -41,6 +41,7 @@
             margin-right: 0.929em;
         }
     }
+
     .results-title {
         font-weight: 600;
         font-size: 16px;
@@ -74,26 +75,43 @@
             line-height: 16px;
             color: #000000;
             border-left: 2px solid #FFFFFF;
-            padding: 12px 12px;
+            padding: 2px 12px;
         }
+
         .ant-table-thead th:first-child {
             border-top-left-radius: 8px;
             border-bottom-left-radius: 8px;
         }
-        .ant-table-thead th:last-child{
+
+        .ant-table-thead th:last-child {
             border-top-right-radius: 8px;
             border-bottom-right-radius: 8px;
         }
+
         .ant-table-column-sorter {
             display: none;
         }
+
         .ant-table-column-title {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+
+            .sort-icon-active {
+                fill: #3C86F4;
+                background: rgba(60, 134, 244, 0.12);
+                border-radius: 2px;
+            }
+
+            .sort-icon-asc {
+                transform: rotate(180deg);
+            }
         }
+
         .ant-table-body {
-            overflow-y: auto!important;
+            overflow-y: auto !important;
         }
+
         .ant-table-tbody td {
             border-bottom: none;
             font-weight: 400;
@@ -103,6 +121,7 @@
             padding: 12px 12px;
             min-height: 48px;
         }
+
         .ant-table-tbody tr>:nth-child(2) {
             font-weight: 600;
             font-size: 14px;
@@ -110,9 +129,11 @@
             color: #175BC0;
             cursor: pointer;
         }
+
         .ant-table-tbody tr>:nth-child(5) {
             text-align: center;
         }
+
         .ant-table-tbody .ant-tag {
             background-color: #D8E7FF;
             border: none;
@@ -123,42 +144,12 @@
             font-size: 14px;
             line-height: 19px;
             padding: 2px 12px;
+
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 15.625em;
+            display: inline-block;
         }
     }
-}
-
-
-.rdt_Table {
-    .rdt_TableRow:not(:last-of-type) {
-        border-bottom: none;
-    }
-    .rdt_TableHeadRow {
-        border-bottom: none;
-        min-height: 40px;
-        font-weight: 600;
-        font-size: 12px;
-        line-height: 16px;
-        color: #000000;
-        background-color: #f5f5f5;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-    .rdt_TableCol {
-        border-left: 2px solid #FFFFFF;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-
-    .rdt_TableCol_Sortable span {
-        height: 18px;
-    }
-
-    .rdt_TableCol_Sortable svg {
-        opacity: 100% !important;
-
-    }
-
 }
