@@ -1,0 +1,93 @@
+.publications-tab-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .publication-container {
+        font-size: 16px;
+        background: #F5F6F8;
+        border-radius: 1em;
+        padding: 0.875em 1.375em 0.625em 1.438em;
+        font-family: 'Open Sans', sans-serif;
+
+        h2 {
+            margin: 0 0 0.375em 0;
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.375em;
+            color: #2B2B2B;
+        }
+
+        .authors-names {
+            margin: 0 0 1.29em 0;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 1.36em;
+            text-decoration-line: underline;
+            color: #2B2B2B;
+
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+        }
+
+        .categories {
+            margin: 0 0 0.43em 0;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 19px;
+            color: #2B2B2B;
+        }
+
+        .column-values {
+            margin: 0 0 0.43em 0;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 1.36em;
+            color: #000000;
+        }
+
+        .column-title {
+            font-weight: 600;
+            color: #6C6C6C;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: row;
+            gap: 9px;
+            margin-top: 0.625em;
+
+            .external-btn {
+                color: #3C86F4;
+                border: 1px solid #3C86F4;
+                font-weight: 600;
+                border-radius: 4px;
+                font-size: 12px;
+                line-height: 16px;
+                cursor: pointer;
+
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 3px 9px;
+                gap: 8px;
+            }
+
+            .external-btn--disabled {
+                border: 1px solid #9F9F9F;
+                color: #9F9F9F;
+                cursor: not-allowed;
+
+                svg {
+                    fill: #9F9F9F;
+                }
+            }
+        }
+    }
+
+    .publication-container:last-child {
+        margin-bottom: 15px;
+    }
+}
