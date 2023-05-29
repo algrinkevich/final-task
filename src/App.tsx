@@ -38,7 +38,7 @@ const App = () => {
       <Route path="auth" element={<Authentication />} />
       <Route element={<Header />}>
         <Route path="search" element={<SearchPage />} />
-        <Route path="protein/:id" element={<ProteinPage />} />
+        <Route path="protein/:proteinId" element={<ProteinPage />} />
       </Route>
     </Routes>
   );

@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
@@ -191,6 +191,9 @@ const SearchPage = () => {
         sorter: true,
         sortOrder: getSortOrder("accession"),
         width: "10%",
+        render: (text, _) => {
+          return <NavLink to={`/protein/${text}`}>{text}</NavLink>;
+        },
       },
       {
         title: (
