@@ -1,0 +1,66 @@
+.details-tab-container {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Open Sans', sans-serif;
+
+    h2 {
+        margin: 0.5em 0 0.5em 0;  
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 1.375em;
+        color: #000000;
+    }
+
+    .details-info-container {
+        display: flex;
+        flex-direction: row;
+        margin-left: 0.36em;
+
+        .details-info-column {
+            display: flex;
+            flex-direction: column;
+            gap: 0.58em;
+            flex: 0 0 12.86em;
+
+            .details-block {
+                display: flex;
+                flex-direction: column;
+                gap: 0.33em;
+                font-size: 12px;
+                line-height: 1.34em;
+
+                .details-title {
+                    font-weight: 600;
+                    color: #616161;
+                }
+                .details-value {
+                    font-weight: 400;
+                    color: #2B2B2B;
+                }
+            }
+        }   
+    }
+    .copy-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.67em;
+        align-self: flex-end;
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 1.33em;
+        color: #000000;
+        margin-bottom: 0.59em;
+        cursor: pointer;
+    }
+    .sequence-value {
+        background: #F2F2F2;
+        border-radius: 0.67em;
+        word-break: break-all;
+        padding: 1em 0.92em 1.08em 1em;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 1.33em;
+        color: #000000;
+    }
+
+}
