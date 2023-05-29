@@ -4,6 +4,7 @@ import { type TabsProps, Tabs } from "antd";
 
 import Tag from "../../components/tag/tag.component";
 import DetailsTab from "../detailes-tab/details-tab.component";
+import FeatureViewerTab from "../feature-viewer-tab/feature-viewer-tab.component";
 
 import "./protein-page.styles.scss";
 
@@ -49,7 +50,7 @@ const ProteinPage = () => {
     {
       key: "2",
       label: `Feature viewer`,
-      children: `Content of Tab Pane 2`,
+      children: <FeatureViewerTab accession={proteinId} />,
     },
     {
       key: "3",
