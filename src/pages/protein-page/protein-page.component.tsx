@@ -3,28 +3,11 @@ import { useParams } from "react-router-dom";
 import { type TabsProps, Tabs } from "antd";
 
 import Tag from "../../components/tag/tag.component";
+import DetailsTab from "../detailes-tab/details-tab.component";
 
 import "./protein-page.styles.scss";
 
-const items: TabsProps["items"] = [
-  {
-    key: "1",
-    label: `Details`,
-    children: `Content of Tab Pane 1`,
-  },
-  {
-    key: "2",
-    label: `Feature viewer`,
-    children: `Content of Tab Pane 2`,
-  },
-  {
-    key: "3",
-    label: `Publication`,
-    children: `Content of Tab Pane 3`,
-  },
-];
-
-interface ProteinResponse {
+export interface ProteinResponse {
   primaryAccession: string;
   uniProtkbId: string;
   organism: {
@@ -56,6 +39,24 @@ interface ProteinResponse {
 const ProteinPage = () => {
   const { proteinId } = useParams();
   const [proteinData, setProteinData] = useState<ProteinResponse | null>(null);
+
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: `Details`,
+      children: <DetailsTab protein={proteinData} />,
+    },
+    {
+      key: "2",
+      label: `Feature viewer`,
+      children: `Content of Tab Pane 2`,
+    },
+    {
+      key: "3",
+      label: `Publication`,
+      children: `Content of Tab Pane 3`,
+    },
+  ];
 
   useEffect(() => {
     async function fetchDataAsync() {
