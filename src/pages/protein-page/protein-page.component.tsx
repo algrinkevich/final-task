@@ -5,6 +5,7 @@ import { type TabsProps, Tabs } from "antd";
 import Tag from "../../components/tag/tag.component";
 import DetailsTab from "../detailes-tab/details-tab.component";
 import FeatureViewerTab from "../feature-viewer-tab/feature-viewer-tab.component";
+import PublicationsTab from "../publications-tab/publications-tab.component";
 
 import "./protein-page.styles.scss";
 
@@ -15,15 +16,15 @@ export interface ProteinResponse {
     scientificName: string;
   };
   proteinDescription: {
-    recommendedName: {
-      fullName: {
+    recommendedName?: {
+      fullName?: {
         value: string;
       };
     };
   };
-  genes: {
+  genes?: {
     geneName: {
-      value: string;
+      value?: string;
     };
   }[];
   sequence: {
@@ -50,12 +51,12 @@ const ProteinPage = () => {
     {
       key: "2",
       label: `Feature viewer`,
-      children: <FeatureViewerTab accession={proteinId} />,
+      children: proteinId && <FeatureViewerTab accession={proteinId} />,
     },
     {
       key: "3",
-      label: `Publication`,
-      children: `Content of Tab Pane 3`,
+      label: `Publications`,
+      children: proteinId && <PublicationsTab proteinId={proteinId} />,
     },
   ];
 
@@ -81,14 +82,17 @@ const ProteinPage = () => {
         <div className="info-block">
           <span className="info-title">{"Protein"}</span>
           <span className="info-description">
-            {`${proteinData?.proteinDescription.recommendedName.fullName.value}`}
+            {`${
+              proteinData?.proteinDescription.recommendedName?.fullName
+                ?.value ?? ""
+            }`}
           </span>
         </div>
         <div className="info-block">
           <span className="info-title">{"Gene"}</span>
-          <span className="info-description">{`${proteinData?.genes
-            .map((v) => v.geneName.value)
-            .join("")}`}</span>
+          <span className="info-description">{`${
+            proteinData?.genes?.map((v) => v.geneName?.value).join("") ?? ""
+          }`}</span>
         </div>
       </div>
 

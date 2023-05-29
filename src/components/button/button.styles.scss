@@ -21,11 +21,6 @@
          fill: #FFFFFF;
      }
 
-     //  &:focus,
-     //  &:focus-visible {
-     //      outline: 4px auto -webkit-focus-ring-color;
-     //  }
-
      &.initial-white {
          background-color: #FFFFFF;
          color: #175BC0;
@@ -72,5 +67,6 @@
      &:disabled:hover {
          background-color: #CFCFCF;
          color: #FFFFFF;
+         cursor: not-allowed;
      }
  }
