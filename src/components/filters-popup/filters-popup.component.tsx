@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Select } from "antd";
 
@@ -154,6 +154,28 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
     onClose();
   };
 
+  const areFiltersChanged = useMemo(() => {
+    const fieldsToCheck = [
+      [filters?.gene, geneName],
+      [filters?.organism?.id, selectedOrganism?.value],
+      [filters?.sequence?.from, seqLenFrom],
+      [filters?.sequence?.to, seqLenTo],
+      [filters?.annotationScore, selectedScore?.value],
+      [filters?.proteinWith?.id, selectedProtein?.value],
+    ];
+
+    // eslint-disable-next-line eqeqeq
+    return !fieldsToCheck.every(([v1, v2]) => v1 == v2);
+  }, [
+    filters,
+    geneName,
+    selectedOrganism,
+    seqLenFrom,
+    seqLenTo,
+    selectedScore,
+    selectedProtein,
+  ]);
+
   return (
     <div className="filters-container">
       <h3>{"Filters"}</h3>
@@ -166,7 +188,9 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           name="geneName"
           styleClasses="form-input-distance"
           defaultValue={geneName}
-          onChange={(event) => setGeneName(event.currentTarget.value)}
+          onChange={(event) =>
+            setGeneName(event.currentTarget.value || undefined)
+          }
         />
 
         <div className="select-container form-input-distance">
@@ -290,16 +314,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
             buttonType={ButtonType.BASE}
             styleClasses="filters-btn"
             type="submit"
-            disabled={[
-              geneName,
-              selectedOrganism?.value,
-              seqLenFrom,
-              seqLenTo,
-              selectedScore?.value,
-              selectedProtein?.value,
-            ].every((v) =>
-              [null, undefined, ""].includes(v as null | undefined | string)
-            )}
+            disabled={!areFiltersChanged}
           >
             {"Apply filters"}
           </Button>
