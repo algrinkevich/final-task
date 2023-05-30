@@ -46,6 +46,7 @@ const SearchPage = () => {
   const filters = useSelector(selectFilters);
   const isSearchRunning = useSelector(selectIsSearchRunning);
   const sorting = useSelector(selectSorting);
+  //const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   useEffect(() => {
     dispatch(setSearchQuery(searchParams.get("query") || ""));

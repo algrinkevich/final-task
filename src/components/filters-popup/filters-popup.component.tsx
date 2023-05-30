@@ -7,6 +7,7 @@ import {
   selectFilters,
   selectSearchQuery,
   setFilters,
+  setSearchQuery,
 } from "../../store/slices/entries.slice";
 import { AppDispatch } from "../../store/store";
 import Button, { ButtonType } from "../button/button.component";
@@ -83,7 +84,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
 
     const facetsResponse = await service.getFacetsAsync({
       facetName: "model_organism",
-      searchParams: { query: searchQuery, filters },
+      searchParams: { query: searchQuery || "*", filters },
     });
 
     setOrganisms(facetsResponse.facets[0].values);
@@ -96,7 +97,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
 
     const facetsResponse = await service.getFacetsAsync({
       facetName: "annotation_score",
-      searchParams: { query: searchQuery, filters },
+      searchParams: { query: searchQuery || "*", filters },
     });
 
     setAnnotationScores(
@@ -114,7 +115,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
 
     const facetsResponse = await service.getFacetsAsync({
       facetName: "proteins_with",
-      searchParams: { query: searchQuery, filters },
+      searchParams: { query: searchQuery || "*", filters },
     });
 
     setProteinsWith(facetsResponse.facets[0].values);
@@ -143,6 +144,9 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
   const applyFilters = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (searchQuery === "") {
+      dispatch(setSearchQuery("*"));
+    }
     dispatch(setFilters(convertInputToFilters()));
 
     onClose();
