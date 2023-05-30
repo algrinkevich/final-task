@@ -83,6 +83,10 @@ const SearchPage = () => {
   }, [isSearchRunning, resetScroll]);
 
   useEffect(() => {
+    if (!searchQuery) {
+      return;
+    }
+
     dispatch(fetchItems({ query: searchQuery, filters, sort: sorting }));
     setResetScroll(true);
 
