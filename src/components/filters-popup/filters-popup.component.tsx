@@ -83,7 +83,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
 
     const facetsResponse = await service.getFacetsAsync({
       facetName: "model_organism",
-      searchParams: { query: searchQuery },
+      searchParams: { query: searchQuery, filters },
     });
 
     setOrganisms(facetsResponse.facets[0].values);
@@ -96,7 +96,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
 
     const facetsResponse = await service.getFacetsAsync({
       facetName: "annotation_score",
-      searchParams: { query: searchQuery },
+      searchParams: { query: searchQuery, filters },
     });
 
     setAnnotationScores(
@@ -114,7 +114,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
 
     const facetsResponse = await service.getFacetsAsync({
       facetName: "proteins_with",
-      searchParams: { query: searchQuery },
+      searchParams: { query: searchQuery, filters },
     });
 
     setProteinsWith(facetsResponse.facets[0].values);

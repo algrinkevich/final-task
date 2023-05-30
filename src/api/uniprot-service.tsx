@@ -27,7 +27,7 @@ export class UniprotService {
     return matches?.length ? matches[0].slice(1, -1) : null;
   }
 
-  async searchAsync(args: SearchParams) {
+  filtersToQueryString(args: SearchParams) {
     let filteredQuery = args.query;
 
     if (args?.filters?.gene) {
@@ -55,7 +55,11 @@ export class UniprotService {
       filteredQuery += ` AND (proteins_with:${args.filters?.proteinWith.id})`;
     }
 
-    filteredQuery = encodeURI(filteredQuery);
+    return encodeURI(filteredQuery);
+  }
+
+  async searchAsync(args: SearchParams) {
+    const filteredQuery = this.filtersToQueryString(args);
 
     let sortParams = "";
 
@@ -86,10 +90,10 @@ export class UniprotService {
     facetName: string;
     searchParams: SearchParams;
   }) {
+    const filteredQuery = this.filtersToQueryString(searchParams);
+
     const response = await fetch(
-      `${this.getSearchUrl()}?facets=${facetName}&query=${
-        searchParams.query
-      }&size=0`
+      `${this.getSearchUrl()}?facets=${facetName}&query=${filteredQuery}&size=0`
     );
 
     return await response.json();
