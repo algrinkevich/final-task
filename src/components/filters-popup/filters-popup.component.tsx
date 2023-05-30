@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Select } from "antd";
 
+import { UniprotService } from "../../api/uniprot-service";
 import {
   selectFilters,
   selectSearchQuery,
@@ -74,57 +75,50 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
     },
   ]);
 
-  const handleOrganismLoading = () => {
+  const service = new UniprotService();
+
+  const handleOrganismLoadingAsync = async () => {
     setOrganisms([]);
     setIsOrganismLoading(true);
 
-    return fetch(
-      ` https://rest.uniprot.org/uniprotkb/search?facets=model_organism&query=${searchQuery}`
-    )
-      .then((response) => response.json())
-      .then((results) => {
-        setOrganisms(results.facets[0].values);
-        setIsOrganismLoading(false);
+    const facetsResponse = await service.getFacetsAsync({
+      facetName: "model_organism",
+      searchParams: { query: searchQuery },
+    });
 
-        return;
-      });
+    setOrganisms(facetsResponse.facets[0].values);
+    setIsOrganismLoading(false);
   };
 
-  const handleAnnotationScoreLoading = () => {
+  const handleAnnotationScoreLoadingAsync = async () => {
     setAnnotationScores([]);
     setIsScoreLoading(true);
 
-    return fetch(
-      ` https://rest.uniprot.org/uniprotkb/search?facets=annotation_score&query=${searchQuery}`
-    )
-      .then((response) => response.json())
-      .then((results) => {
-        setAnnotationScores(
-          results.facets[0].values.map((item: { value: string }) => ({
-            value: item.value,
-            label: item.value,
-          }))
-        );
-        setIsScoreLoading(false);
+    const facetsResponse = await service.getFacetsAsync({
+      facetName: "annotation_score",
+      searchParams: { query: searchQuery },
+    });
 
-        return;
-      });
+    setAnnotationScores(
+      facetsResponse.facets[0].values.map((item: { value: string }) => ({
+        value: item.value,
+        label: item.value,
+      }))
+    );
+    setIsScoreLoading(false);
   };
 
-  const handleProteinWithLoading = () => {
+  const handleProteinWithLoadingAsync = async () => {
     setProteinsWith([]);
     setIsProteinLoading(true);
 
-    return fetch(
-      ` https://rest.uniprot.org/uniprotkb/search?facets=proteins_with&query=${searchQuery}`
-    )
-      .then((response) => response.json())
-      .then((results) => {
-        setProteinsWith(results.facets[0].values);
-        setIsProteinLoading(false);
+    const facetsResponse = await service.getFacetsAsync({
+      facetName: "proteins_with",
+      searchParams: { query: searchQuery },
+    });
 
-        return;
-      });
+    setProteinsWith(facetsResponse.facets[0].values);
+    setIsProteinLoading(false);
   };
 
   const convertInputToFilters = () => {
@@ -199,7 +193,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           </label>
           <Select
             defaultValue={filters?.organism?.id}
-            onDropdownVisibleChange={handleOrganismLoading}
+            onDropdownVisibleChange={handleOrganismLoadingAsync}
             placeholder="Select an option"
             options={organisms}
             loading={isOrganismLoading}
@@ -261,7 +255,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           </label>
           <Select
             defaultValue={filters?.annotationScore}
-            onDropdownVisibleChange={handleAnnotationScoreLoading}
+            onDropdownVisibleChange={handleAnnotationScoreLoadingAsync}
             placeholder="Select an option"
             options={annotationScores}
             loading={isScoreLoading}
@@ -284,7 +278,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           </label>
           <Select
             defaultValue={filters?.proteinWith?.id}
-            onDropdownVisibleChange={handleProteinWithLoading}
+            onDropdownVisibleChange={handleProteinWithLoadingAsync}
             placeholder="Select an option"
             options={proteinsWith}
             loading={isProteinLoading}
