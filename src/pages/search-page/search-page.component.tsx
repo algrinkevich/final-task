@@ -241,9 +241,7 @@ const SearchPage = () => {
         width: "10%",
         key: "5",
         sortOrder: getSortOrder("organismName"),
-        render: (text, _, index) => (
-          <Tag key={`${text}-${index}`} text={text} />
-        ),
+        render: (text, _) => <Tag text={text} />,
       },
       {
         title: "Subcellular Location",
@@ -314,6 +312,7 @@ const SearchPage = () => {
             }}
             pagination={false}
             loading={isSearchRunning}
+            rowKey="index"
             onChange={(_, __, sorter) => {
               dispatch(
                 setSorting(
