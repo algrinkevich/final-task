@@ -96,7 +96,7 @@ const ProteinPage = () => {
         </div>
       </div>
 
-      <Tabs defaultActiveKey="1" items={items} />
+      <Tabs items={items} />
     </div>
   );
 };

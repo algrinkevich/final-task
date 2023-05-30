@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import PickerButton from "antd/es/date-picker/PickerButton";
 
 import { ReactComponent as ExternalLinkIcon } from "../../assets/externalLinkIcon.svg";
 
@@ -28,7 +27,6 @@ interface PublicationResponse {
   }[];
 }
 
-//${journal} ${volume}:${firstPage}-${lastPage} (${publicationDate}
 
 const PublicationsTab = ({ proteinId }: { proteinId: string }) => {
   const [publicationsData, setPublicationsData] = useState<

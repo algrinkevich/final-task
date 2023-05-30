@@ -16,3 +16,9 @@ declare module "*.svg" {
   const src: string;
   export default src;
 }
+
+declare module "protvista-uniprot" {
+  import protvista = require("protvista-uniprot");
+  const ProtVistaUniprot: CustomElement = protvista;
+  export default ProtVistaUniprot;
+}
