@@ -356,7 +356,6 @@ const SearchPage = () => {
               y: "calc(100vh - 16.5em)",
               scrollToFirstRowOnChange: true,
             }}
-            //scroll={{y: 600}}
             pagination={false}
             loading={isSearchRunning}
             rowKey="index"
