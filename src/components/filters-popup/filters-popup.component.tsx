@@ -78,7 +78,11 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
 
   const service = new UniprotService();
 
-  const handleOrganismLoadingAsync = async () => {
+  const handleOrganismLoadingAsync = async (open: boolean) => {
+    if (!open) {
+      return;
+    }
+
     setOrganisms([]);
     setIsOrganismLoading(true);
 
@@ -91,7 +95,11 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
     setIsOrganismLoading(false);
   };
 
-  const handleAnnotationScoreLoadingAsync = async () => {
+  const handleAnnotationScoreLoadingAsync = async (open: boolean) => {
+    if (!open) {
+      return;
+    }
+
     setAnnotationScores([]);
     setIsScoreLoading(true);
 
@@ -109,7 +117,11 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
     setIsScoreLoading(false);
   };
 
-  const handleProteinWithLoadingAsync = async () => {
+  const handleProteinWithLoadingAsync = async (open: boolean) => {
+    if (!open) {
+      return;
+    }
+
     setProteinsWith([]);
     setIsProteinLoading(true);
 
@@ -147,6 +159,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
     if (searchQuery === "") {
       dispatch(setSearchQuery("*"));
     }
+
     dispatch(setFilters(convertInputToFilters()));
 
     onClose();
