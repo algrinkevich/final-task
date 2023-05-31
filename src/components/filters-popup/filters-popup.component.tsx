@@ -91,7 +91,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
       searchParams: { query: searchQuery || "*", filters },
     });
 
-    setOrganisms(facetsResponse.facets[0].values);
+    setOrganisms(facetsResponse.facets?.at(0)?.values || []);
     setIsOrganismLoading(false);
   };
 
@@ -109,10 +109,10 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
     });
 
     setAnnotationScores(
-      facetsResponse.facets[0].values.map((item: { value: string }) => ({
+      facetsResponse.facets?.at(0)?.values.map((item: { value: string }) => ({
         value: item.value,
         label: item.value,
-      }))
+      })) || []
     );
     setIsScoreLoading(false);
   };
@@ -130,7 +130,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
       searchParams: { query: searchQuery || "*", filters },
     });
 
-    setProteinsWith(facetsResponse.facets[0].values);
+    setProteinsWith(facetsResponse.facets?.at(0)?.values || []);
     setIsProteinLoading(false);
   };
 

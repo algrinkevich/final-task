@@ -160,7 +160,9 @@ export const countItems = createAsyncThunk(
     });
 
     return (
-      facetResponse?.facets[0].values.reduce((acc, v) => acc + v.count, 0) || 0
+      facetResponse.facets
+        ?.at(0)
+        ?.values.reduce((acc, v) => acc + v.count, 0) || 0
     );
   }
 );

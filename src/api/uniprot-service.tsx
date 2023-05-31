@@ -25,7 +25,7 @@ interface UniProtFacets {
   }[];
 }
 export interface UniProtFacetsResponse {
-  facets: UniProtFacets[];
+  facets?: UniProtFacets[];
 }
 
 export interface UniProtSearchResponse {
