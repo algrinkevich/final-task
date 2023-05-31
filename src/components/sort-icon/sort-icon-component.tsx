@@ -2,8 +2,6 @@ import { Fragment } from "react";
 
 import { ReactComponent as SortingIcon } from "../../assets/sortIcon.svg";
 
-import "./sort-icon-styles.scss";
-
 const SortIcon = ({
   direction,
   children,

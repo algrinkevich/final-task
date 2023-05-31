@@ -1,7 +1,7 @@
  .button-container {
-     border-radius: 8px;
+     border-radius: 0.57em;
      border: 1px solid transparent;
-     font-size: 14px;
+     font-size: 0.875rem;
      font-weight: 600;
      font-family: inherit;
      cursor: pointer;
@@ -24,7 +24,7 @@
      &.initial-white {
          background-color: #FFFFFF;
          color: #175BC0;
-         font-size: 12px;
+         font-size: 0.75rem;
          line-height: 1.33333em;
          font-weight: 700;
          width: fit-content;
@@ -35,18 +35,18 @@
      &.initial-blue {
          background-color: #D8E7FF;
          color: #175BC0;
-         font-size: 12px;
+         font-size: 0.75rem;
          line-height: 1.33333em;
          font-weight: 700;
          border-radius: 2em;
-         padding-top: 16px;
-         padding-bottom: 16px;
-         border-radius: 12px;
+         padding-top: 1.33em;
+         padding-bottom: 1.33em;
+         border-radius: 1em;
      }
 
      &.filters-btn {
-         width: 2.5rem;
-         height: 2.5rem;
+         width: 2.8572em;
+         height: 2.8572em;
          display: flex;
          align-items: center;
          justify-content: center;
