@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useSearchParams } from "react-router-dom";
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import { useVT } from "virtualizedtableforantd4";
 
 import Button, { ButtonType } from "../../components/button/button.component";
 import FiltersPopup from "../../components/filters-popup/filters-popup.component";
@@ -68,6 +69,17 @@ const SearchPage = () => {
   const sorting = useSelector(selectSorting);
   const totalItems = useSelector(selectTotal);
   const enableInfiniteScroll = !isSearchRunning && items.length < totalItems;
+
+  const [vt, _] = useVT(
+    () => ({
+      scroll: {
+        x: true,
+        y: "calc(100vh - 16.5em)",
+        scrollToFirstRowOnChange: true,
+      },
+    }),
+    []
+  );
 
   useEffect(() => {
     dispatch(setSearchQuery(searchParams.get("query") || ""));
@@ -334,6 +346,7 @@ const SearchPage = () => {
       {items.length > 0 ? (
         <Fragment>
           <Table
+            components={vt}
             id="mytable"
             columns={columns}
             dataSource={items}

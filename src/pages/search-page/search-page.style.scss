@@ -151,5 +151,9 @@
             max-width: 15.625em;
             display: inline-block;
         }
+
+        .ant-table-body table {
+            width: auto;
+        }
     }
 }
