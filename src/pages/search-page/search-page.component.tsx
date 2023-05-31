@@ -38,6 +38,23 @@ import { ReactComponent as IndicatorIcon } from "../../assets/indicator.svg";
 
 import "./search-page.style.scss";
 
+function removeEmpty(data: object) {
+  const entries = Object.entries(data).filter(([, value]) => value != null);
+  const filteredEntries: Array<string[]> = [];
+
+  entries.forEach(([key, v]) => {
+    const value = typeof v === "object" ? removeEmpty(v) : v;
+
+    if (typeof value === "object" && Object.keys(value).length === 0) {
+      return;
+    }
+
+    filteredEntries.push([key, value]);
+  });
+
+  return Object.fromEntries(filteredEntries);
+}
+
 const SearchPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [resetScroll, setResetScroll] = useState(false);
@@ -281,6 +298,9 @@ const SearchPage = () => {
     [sorting, getSortOrder]
   );
 
+  const hasFilters =
+    Object.keys(filters ? removeEmpty(filters) : {}).length > 0;
+
   return (
     <div className="search-page-container">
       <form className="search-page-form" onSubmit={onSearch}>
@@ -301,9 +321,9 @@ const SearchPage = () => {
           type="button"
         >
           <FiltersIcon />
-          {/* <div className="filters-btn-container">
-            {filters && <IndicatorIcon className="filters-indicator" />}
-          </div> */}
+          <div className="filters-btn-container">
+            {hasFilters && <IndicatorIcon className="filters-indicator" />}
+          </div>
         </Button>
       </form>
 
