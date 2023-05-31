@@ -89,7 +89,9 @@ const SearchPage = () => {
 
     dispatch(fetchItems({ query: searchQuery, filters, sort: sorting }));
     setResetScroll(true);
+  }, [searchQuery, dispatch, filters, sorting]);
 
+  useEffect(() => {
     const queryString = {
       query: searchQuery,
       geneValue: filters?.gene,

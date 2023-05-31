@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import isEqual from "lodash/isEqual";
 
 import { SearchParams, UniprotService } from "../../api/uniprot-service";
 import { RootState } from "../store";
@@ -71,9 +72,17 @@ export const entriesSlice = createSlice({
       state.search.query = action.payload;
     },
     setFilters(state, action) {
+      if (isEqual(state.search.filters, action.payload)) {
+        return;
+      }
+
       state.search.filters = action.payload;
     },
     setSorting(state, action) {
+      if (isEqual(state.search.sort, action.payload)) {
+        return;
+      }
+
       state.search.sort = { ...action.payload };
     },
   },
