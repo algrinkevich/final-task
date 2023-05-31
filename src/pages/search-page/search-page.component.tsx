@@ -137,17 +137,15 @@ const SearchPage = () => {
   );
 
   const showSearchResultsTitle = () => {
-    if (totalItems > 0 && searchQuery === "*") {
+    if (searchQuery === "") {
+      return;
+    } else if (searchQuery === "*") {
       return (
         <p className="results-title">{`${totalItems} Search Results for "All"`}</p>
       );
-    } else if (totalItems > 0 && searchQuery) {
+    } else {
       return (
         <p className="results-title">{`${totalItems} Search Results for "${searchQuery}"`}</p>
-      );
-    } else if (totalItems === 0 && searchQuery) {
-      return (
-        <p className="results-title">{`0 Search Results for "${searchQuery}"`}</p>
       );
     }
   };

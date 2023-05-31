@@ -27,7 +27,6 @@ interface PublicationResponse {
   }[];
 }
 
-
 const PublicationsTab = ({ proteinId }: { proteinId: string }) => {
   const [publicationsData, setPublicationsData] = useState<
     PublicationResponse[]
@@ -60,7 +59,7 @@ const PublicationsTab = ({ proteinId }: { proteinId: string }) => {
   return (
     <div>
       <div className="publications-tab-container">
-        {publicationsData.map((publication) => {
+        {publicationsData.map((publication, index) => {
           const pubMedId = publication.citation.citationCrossReferences?.find(
             (v) => v.database === "PubMed"
           )?.id;
@@ -73,10 +72,7 @@ const PublicationsTab = ({ proteinId }: { proteinId: string }) => {
           const publicationTitle = getPublicationButtonTitle(publication);
 
           return (
-            <div
-              className="publication-container"
-              key={publication.citation.title}
-            >
+            <div className="publication-container" key={index}>
               <h2>{publication?.citation.title} </h2>
               <p className="authors-names">
                 {publication?.citation.authors?.join("")}
