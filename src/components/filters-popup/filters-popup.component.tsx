@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Select } from "antd";
 
+import { UniprotService } from "../../api/uniprot-service";
 import {
   selectFilters,
   selectSearchQuery,
   setFilters,
+  setSearchQuery,
 } from "../../store/slices/entries.slice";
 import { AppDispatch } from "../../store/store";
 import Button, { ButtonType } from "../button/button.component";
@@ -74,57 +76,62 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
     },
   ]);
 
-  const handleOrganismLoading = () => {
+  const service = new UniprotService();
+
+  const handleOrganismLoadingAsync = async (open: boolean) => {
+    if (!open) {
+      return;
+    }
+
     setOrganisms([]);
     setIsOrganismLoading(true);
 
-    return fetch(
-      ` https://rest.uniprot.org/uniprotkb/search?facets=model_organism&query=${searchQuery}`
-    )
-      .then((response) => response.json())
-      .then((results) => {
-        setOrganisms(results.facets[0].values);
-        setIsOrganismLoading(false);
+    const facetsResponse = await service.getFacetsAsync({
+      facetName: "model_organism",
+      searchParams: { query: searchQuery || "*", filters },
+    });
 
-        return;
-      });
+    setOrganisms(facetsResponse.facets?.at(0)?.values || []);
+    setIsOrganismLoading(false);
   };
 
-  const handleAnnotationScoreLoading = () => {
+  const handleAnnotationScoreLoadingAsync = async (open: boolean) => {
+    if (!open) {
+      return;
+    }
+
     setAnnotationScores([]);
     setIsScoreLoading(true);
 
-    return fetch(
-      ` https://rest.uniprot.org/uniprotkb/search?facets=annotation_score&query=${searchQuery}`
-    )
-      .then((response) => response.json())
-      .then((results) => {
-        setAnnotationScores(
-          results.facets[0].values.map((item: { value: string }) => ({
-            value: item.value,
-            label: item.value,
-          }))
-        );
-        setIsScoreLoading(false);
+    const facetsResponse = await service.getFacetsAsync({
+      facetName: "annotation_score",
+      searchParams: { query: searchQuery || "*", filters },
+    });
 
-        return;
-      });
+    setAnnotationScores(
+      facetsResponse.facets?.at(0)?.values.map((item: { value: string }) => ({
+        value: item.value,
+        label: item.value,
+      })) || []
+    );
+    setIsScoreLoading(false);
   };
 
-  const handleProteinWithLoading = () => {
+  const handleProteinWithLoadingAsync = async (open: boolean) => {
+    if (!open) {
+      return;
+    }
+
     setProteinsWith([]);
     setIsProteinLoading(true);
 
-    return fetch(
-      ` https://rest.uniprot.org/uniprotkb/search?facets=proteins_with&query=${searchQuery}`
-    )
-      .then((response) => response.json())
-      .then((results) => {
-        setProteinsWith(results.facets[0].values);
-        setIsProteinLoading(false);
+    const facetsResponse = await service.getFacetsAsync({
+      facetName: "proteins_with",
+      searchParams: { query: searchQuery || "*", filters },
+    });
 
-        return;
-      });
+    setProteinsWith(facetsResponse.facets?.at(0)?.values || []);
+    setIsProteinLoading(false);
   };
 
   const convertInputToFilters = () => {
@@ -149,10 +156,36 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
   const applyFilters = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (searchQuery === "") {
+      dispatch(setSearchQuery("*"));
+    }
+
     dispatch(setFilters(convertInputToFilters()));
 
     onClose();
   };
+
+  const areFiltersChanged = useMemo(() => {
+    const fieldsToCheck = [
+      [filters?.gene, geneName],
+      [filters?.organism?.id, selectedOrganism?.value],
+      [filters?.sequence?.from, seqLenFrom],
+      [filters?.sequence?.to, seqLenTo],
+      [filters?.annotationScore, selectedScore?.value],
+      [filters?.proteinWith?.id, selectedProtein?.value],
+    ];
+
+    // eslint-disable-next-line eqeqeq
+    return !fieldsToCheck.every(([v1, v2]) => v1 == v2);
+  }, [
+    filters,
+    geneName,
+    selectedOrganism,
+    seqLenFrom,
+    seqLenTo,
+    selectedScore,
+    selectedProtein,
+  ]);
 
   return (
     <div className="filters-container">
@@ -166,7 +199,9 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           name="geneName"
           styleClasses="form-input-distance"
           defaultValue={geneName}
-          onChange={(event) => setGeneName(event.currentTarget.value)}
+          onChange={(event) =>
+            setGeneName(event.currentTarget.value || undefined)
+          }
         />
 
         <div className="select-container form-input-distance">
@@ -175,7 +210,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           </label>
           <Select
             defaultValue={filters?.organism?.id}
-            onDropdownVisibleChange={handleOrganismLoading}
+            onDropdownVisibleChange={handleOrganismLoadingAsync}
             placeholder="Select an option"
             options={organisms}
             loading={isOrganismLoading}
@@ -237,7 +272,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           </label>
           <Select
             defaultValue={filters?.annotationScore}
-            onDropdownVisibleChange={handleAnnotationScoreLoading}
+            onDropdownVisibleChange={handleAnnotationScoreLoadingAsync}
             placeholder="Select an option"
             options={annotationScores}
             loading={isScoreLoading}
@@ -260,7 +295,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
           </label>
           <Select
             defaultValue={filters?.proteinWith?.id}
-            onDropdownVisibleChange={handleProteinWithLoading}
+            onDropdownVisibleChange={handleProteinWithLoadingAsync}
             placeholder="Select an option"
             options={proteinsWith}
             loading={isProteinLoading}
@@ -290,16 +325,7 @@ const FiltersPopup = ({ onClose }: { onClose: () => void }) => {
             buttonType={ButtonType.BASE}
             styleClasses="filters-btn"
             type="submit"
-            disabled={[
-              geneName,
-              selectedOrganism?.value,
-              seqLenFrom,
-              seqLenTo,
-              selectedScore?.value,
-              selectedProtein?.value,
-            ].every((v) =>
-              [null, undefined, ""].includes(v as null | undefined | string)
-            )}
+            disabled={!areFiltersChanged}
           >
             {"Apply filters"}
           </Button>

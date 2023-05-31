@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { type TabsProps, Tabs } from "antd";
 
 import Tag from "../../components/tag/tag.component";
@@ -41,6 +41,8 @@ export interface ProteinResponse {
 const ProteinPage = () => {
   const { proteinId } = useParams();
   const [proteinData, setProteinData] = useState<ProteinResponse | null>(null);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const navigate = useNavigate();
 
   const items: TabsProps["items"] = [
     {
@@ -62,42 +64,53 @@ const ProteinPage = () => {
 
   useEffect(() => {
     async function fetchDataAsync() {
-      const response = await fetch(
-        `https://rest.uniprot.org/uniprotkb/${proteinId}`
-      );
+      try {
+        const response = await fetch(
+          `https://rest.uniprot.org/uniprotkb/${proteinId}`
+        );
 
-      setProteinData(await response.json());
+        if (response.status !== 200) {
+          throw new Error(`Unexpected server code: ${response.status}`);
+        }
+
+        setProteinData(await response.json());
+        setIsDataLoaded(true);
+      } catch {
+        navigate("/not-found");
+      }
     }
 
     fetchDataAsync();
-  }, [proteinId]);
+  }, [proteinId, navigate]);
 
   return (
-    <div className="protein-page-container">
-      <div className="title-container">
-        <h2 className="protein-title">{`${proteinData?.primaryAccession} / ${proteinData?.uniProtkbId}`}</h2>
-        <Tag text={`${proteinData?.organism.scientificName}`} />
-      </div>
-      <div className="protein-info-container">
-        <div className="info-block">
-          <span className="info-title">{"Protein"}</span>
-          <span className="info-description">
-            {`${
-              proteinData?.proteinDescription.recommendedName?.fullName
-                ?.value ?? ""
-            }`}
-          </span>
+    isDataLoaded && (
+      <div className="protein-page-container">
+        <div className="title-container">
+          <h2 className="protein-title">{`${proteinData?.primaryAccession} / ${proteinData?.uniProtkbId}`}</h2>
+          <Tag text={`${proteinData?.organism?.scientificName}`} />
         </div>
-        <div className="info-block">
-          <span className="info-title">{"Gene"}</span>
-          <span className="info-description">{`${
-            proteinData?.genes?.map((v) => v.geneName?.value).join("") ?? ""
-          }`}</span>
+        <div className="protein-info-container">
+          <div className="info-block">
+            <span className="info-title">{"Protein"}</span>
+            <span className="info-description">
+              {`${
+                proteinData?.proteinDescription.recommendedName?.fullName
+                  ?.value ?? ""
+              }`}
+            </span>
+          </div>
+          <div className="info-block">
+            <span className="info-title">{"Gene"}</span>
+            <span className="info-description">{`${
+              proteinData?.genes?.map((v) => v.geneName?.value).join("") ?? ""
+            }`}</span>
+          </div>
         </div>
-      </div>
 
-      <Tabs items={items} />
-    </div>
+        <Tabs items={items} />
+      </div>
+    )
   );
 };
 

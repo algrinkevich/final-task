@@ -1,5 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import isEqual from "lodash/isEqual";
 
+import {
+  SearchParams,
+  UniProtSearchResponse,
+  UniprotService,
+} from "../../api/uniprot-service";
 import { RootState } from "../store";
 
 export interface SearchItem {
@@ -14,46 +20,10 @@ export interface SearchItem {
 
 interface EntriesState {
   items: SearchItem[];
-  search: SearchState;
+  search: SearchParams;
   nextPageLink: string | null;
   isSearchRunning: boolean;
-}
-
-interface UniProtSearchResponse {
-  results: {
-    primaryAccession: string;
-    uniProtkbId: string;
-    organism: {
-      scientificName: string;
-    };
-    genes: {
-      geneName: { value: string };
-    }[];
-    comments: {
-      subcellularLocations: {
-        location: { value: string };
-      }[];
-    }[];
-    sequence: { length: number };
-  }[];
-}
-
-interface SearchState {
-  query: string;
-  filters?: {
-    gene?: string;
-    organism?: { name: string; id: string };
-    sequence?: {
-      from?: number;
-      to?: number;
-    };
-    annotationScore?: string;
-    proteinWith?: { name: string; id: string };
-  };
-  sort?: {
-    field: string;
-    direction: "asc" | "desc";
-  };
+  total: number;
 }
 
 const INITIAL_STATE: EntriesState = {
@@ -61,6 +31,7 @@ const INITIAL_STATE: EntriesState = {
   search: { query: "" },
   nextPageLink: null,
   isSearchRunning: false,
+  total: 0,
 };
 
 const searchResultsToStateItems = (searchResults: UniProtSearchResponse) => {
@@ -88,9 +59,17 @@ export const entriesSlice = createSlice({
       state.search.query = action.payload;
     },
     setFilters(state, action) {
+      if (isEqual(state.search.filters, action.payload)) {
+        return;
+      }
+
       state.search.filters = action.payload;
     },
     setSorting(state, action) {
+      if (isEqual(state.search.sort, action.payload)) {
+        return;
+      }
+
       state.search.sort = { ...action.payload };
     },
   },
@@ -137,63 +116,19 @@ export const entriesSlice = createSlice({
             ...searchResultsToStateItems(action.payload.searchResults),
           ].map((item, index) => ({ ...item, index }));
         }
-      );
+      )
+      .addCase(countItems.fulfilled, (state, action) => {
+        state.total = action.payload;
+      });
   },
 });
 
 export const fetchItems = createAsyncThunk(
   "entries/fetchItems",
-  async (args: SearchState) => {
-    let filteredQuery = args.query;
+  async (args: SearchParams) => {
+    const service = new UniprotService();
 
-    if (args?.filters?.gene) {
-      filteredQuery += ` AND (gene:${args.filters?.gene})`;
-    }
-
-    if (args?.filters?.organism?.id) {
-      filteredQuery += ` AND (model_organism:${args.filters?.organism.id})`;
-    }
-
-    if (
-      args?.filters?.sequence &&
-      (args.filters.sequence.from || args.filters.sequence.to)
-    ) {
-      filteredQuery += ` AND (length:[${args.filters.sequence.from || "*"} TO ${
-        args.filters.sequence.to || "*"
-      }])`;
-    }
-
-    if (args?.filters?.annotationScore) {
-      filteredQuery += ` AND (annotation_score:${args.filters?.annotationScore})`;
-    }
-
-    if (args?.filters?.proteinWith?.id) {
-      filteredQuery += ` AND (proteins_with:${args.filters?.proteinWith.id})`;
-    }
-
-    filteredQuery = encodeURI(filteredQuery);
-
-    let sortParams = "";
-
-    if (args.sort?.field) {
-      const field =
-        {
-          organismName: "organism_name",
-          geneNames: "gene",
-        }[args.sort?.field] || args.sort?.field;
-
-      sortParams = `&sort=${field} ${args.sort?.direction}`;
-    }
-
-    const response = await fetch(
-      `https://rest.uniprot.org/uniprotkb/search?fields=accession,reviewed,id,protein_name,gene_names,organism_name,length,ft_peptide,cc_subcellular_location&query=${filteredQuery}&size=50${sortParams}`
-    );
-
-    const matches = response.headers?.get("Link")?.match(/<.*>/);
-    const link = matches?.length ? matches[0].slice(1, -1) : null;
-    const data = await response.json();
-
-    return { searchResults: data, nextPageLink: link };
+    return service.searchAsync(args);
   }
 );
 
@@ -207,12 +142,28 @@ export const fetchNextItems = createAsyncThunk(
     }
 
     const response = await fetch(state.entries.nextPageLink);
-
-    const matches = response.headers?.get("Link")?.match(/<.*>/);
-    const link = matches?.length ? matches[0].slice(1, -1) : null;
+    const link = new UniprotService().extractLinkFromResponse(response);
     const data = await response.json();
 
     return { searchResults: data, nextPageLink: link };
+  }
+);
+
+export const countItems = createAsyncThunk(
+  "entries/countItems",
+  async (args: SearchParams) => {
+    const service = new UniprotService();
+
+    const facetResponse = await service.getFacetsAsync({
+      searchParams: args,
+      facetName: "reviewed",
+    });
+
+    return (
+      facetResponse.facets
+        ?.at(0)
+        ?.values.reduce((acc, v) => acc + v.count, 0) || 0
+    );
   }
 );
 
@@ -225,5 +176,6 @@ export const selectFilters = (state: RootState) => state.entries.search.filters;
 export const selectIsSearchRunning = (state: RootState) =>
   state.entries.isSearchRunning;
 export const selectSorting = (state: RootState) => state.entries.search.sort;
+export const selectTotal = (state: RootState) => state.entries.total;
 
 export const entriesReducer = entriesSlice.reducer;

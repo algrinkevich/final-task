@@ -17,6 +17,7 @@ import InfiniteScroll from "../../components/infinite-scroll/infinite-scroll.com
 import SortIcon from "../../components/sort-icon/sort-icon-component";
 import Tag from "../../components/tag/tag.component";
 import {
+  countItems,
   fetchItems,
   fetchNextItems,
   SearchItem,
@@ -25,6 +26,7 @@ import {
   selectItems,
   selectSearchQuery,
   selectSorting,
+  selectTotal,
   setFilters,
   setSearchQuery,
   setSorting,
@@ -32,8 +34,26 @@ import {
 import { AppDispatch } from "../../store/store";
 
 import { ReactComponent as FiltersIcon } from "../../assets/filters.svg";
+import { ReactComponent as IndicatorIcon } from "../../assets/indicator.svg";
 
 import "./search-page.style.scss";
+
+function removeEmpty(data: object) {
+  const entries = Object.entries(data).filter(([, value]) => value != null);
+  const filteredEntries: Array<string[]> = [];
+
+  entries.forEach(([key, v]) => {
+    const value = typeof v === "object" ? removeEmpty(v) : v;
+
+    if (typeof value === "object" && Object.keys(value).length === 0) {
+      return;
+    }
+
+    filteredEntries.push([key, value]);
+  });
+
+  return Object.fromEntries(filteredEntries);
+}
 
 const SearchPage = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -46,6 +66,8 @@ const SearchPage = () => {
   const filters = useSelector(selectFilters);
   const isSearchRunning = useSelector(selectIsSearchRunning);
   const sorting = useSelector(selectSorting);
+  const totalItems = useSelector(selectTotal);
+  const enableInfiniteScroll = !isSearchRunning && items.length < totalItems;
 
   useEffect(() => {
     dispatch(setSearchQuery(searchParams.get("query") || ""));
@@ -82,9 +104,16 @@ const SearchPage = () => {
   }, [isSearchRunning, resetScroll]);
 
   useEffect(() => {
-    dispatch(fetchItems({ query: searchQuery, filters, sort: sorting }));
-    setResetScroll(true);
+    if (!searchQuery) {
+      return;
+    }
 
+    dispatch(fetchItems({ query: searchQuery, filters, sort: sorting }));
+    dispatch(countItems({ query: searchQuery, filters, sort: sorting }));
+    setResetScroll(true);
+  }, [searchQuery, dispatch, filters, sorting]);
+
+  useEffect(() => {
     const queryString = {
       query: searchQuery,
       geneValue: filters?.gene,
@@ -126,17 +155,15 @@ const SearchPage = () => {
   );
 
   const showSearchResultsTitle = () => {
-    if (items.length > 0 && searchQuery === "*") {
+    if (searchQuery === "") {
+      return;
+    } else if (searchQuery === "*") {
       return (
-        <p className="results-title">{`${items.length} Search Results for "All"`}</p>
+        <p className="results-title">{`${totalItems} Search Results for "All"`}</p>
       );
-    } else if (items.length > 0 && searchQuery) {
+    } else {
       return (
-        <p className="results-title">{`${items.length} Search Results for "${searchQuery}"`}</p>
-      );
-    } else if (items.length === 0 && searchQuery) {
-      return (
-        <p className="results-title">{`0 Search Results for "${searchQuery}"`}</p>
+        <p className="results-title">{`${totalItems} Search Results for "${searchQuery}"`}</p>
       );
     }
   };
@@ -241,9 +268,7 @@ const SearchPage = () => {
         width: "10%",
         key: "5",
         sortOrder: getSortOrder("organismName"),
-        render: (text, _, index) => (
-          <Tag key={`${text}-${index}`} text={text} />
-        ),
+        render: (text, _) => <Tag text={text} />,
       },
       {
         title: "Subcellular Location",
@@ -273,6 +298,9 @@ const SearchPage = () => {
     [sorting, getSortOrder]
   );
 
+  const hasFilters =
+    Object.keys(filters ? removeEmpty(filters) : {}).length > 0;
+
   return (
     <div className="search-page-container">
       <form className="search-page-form" onSubmit={onSearch}>
@@ -293,6 +321,9 @@ const SearchPage = () => {
           type="button"
         >
           <FiltersIcon />
+          <div className="filters-btn-container">
+            {hasFilters && <IndicatorIcon className="filters-indicator" />}
+          </div>
         </Button>
       </form>
 
@@ -314,6 +345,7 @@ const SearchPage = () => {
             }}
             pagination={false}
             loading={isSearchRunning}
+            rowKey="index"
             onChange={(_, __, sorter) => {
               dispatch(
                 setSorting(
@@ -327,10 +359,12 @@ const SearchPage = () => {
               );
             }}
           />
-          <InfiniteScroll
-            loadMore={() => dispatch(fetchNextItems())}
-            reset={resetScroll}
-          />
+          {enableInfiniteScroll && (
+            <InfiniteScroll
+              loadMore={() => dispatch(fetchNextItems())}
+              reset={resetScroll}
+            />
+          )}
         </Fragment>
       ) : (
         <p className="no-data-placeholder">
