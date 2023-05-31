@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { type TabsProps, Tabs } from "antd";
 
@@ -83,34 +83,34 @@ const ProteinPage = () => {
     fetchDataAsync();
   }, [proteinId, navigate]);
 
-  return (
-    isDataLoaded && (
-      <div className="protein-page-container">
-        <div className="title-container">
-          <h2 className="protein-title">{`${proteinData?.primaryAccession} / ${proteinData?.uniProtkbId}`}</h2>
-          <Tag text={`${proteinData?.organism?.scientificName}`} />
-        </div>
-        <div className="protein-info-container">
-          <div className="info-block">
-            <span className="info-title">{"Protein"}</span>
-            <span className="info-description">
-              {`${
-                proteinData?.proteinDescription.recommendedName?.fullName
-                  ?.value ?? ""
-              }`}
-            </span>
-          </div>
-          <div className="info-block">
-            <span className="info-title">{"Gene"}</span>
-            <span className="info-description">{`${
-              proteinData?.genes?.map((v) => v.geneName?.value).join("") ?? ""
-            }`}</span>
-          </div>
-        </div>
-
-        <Tabs items={items} />
+  return isDataLoaded ? (
+    <div className="protein-page-container">
+      <div className="title-container">
+        <h2 className="protein-title">{`${proteinData?.primaryAccession} / ${proteinData?.uniProtkbId}`}</h2>
+        <Tag text={`${proteinData?.organism?.scientificName}`} />
       </div>
-    )
+      <div className="protein-info-container">
+        <div className="info-block">
+          <span className="info-title">{"Protein"}</span>
+          <span className="info-description">
+            {`${
+              proteinData?.proteinDescription.recommendedName?.fullName
+                ?.value ?? ""
+            }`}
+          </span>
+        </div>
+        <div className="info-block">
+          <span className="info-title">{"Gene"}</span>
+          <span className="info-description">{`${
+            proteinData?.genes?.map((v) => v.geneName?.value).join("") ?? ""
+          }`}</span>
+        </div>
+      </div>
+
+      <Tabs items={items} />
+    </div>
+  ) : (
+    <Fragment />
   );
 };
 
