@@ -40,15 +40,25 @@
             margin-left: 0.643em;
             margin-right: 0.929em;
         }
+
+        .filters-btn-container {
+            position: relative;
+
+            .filters-indicator {
+                position: absolute;
+                top: -1.8em;
+                right: -0.4em;
+            }
+        }
     }
 
     .results-title {
         font-weight: 600;
         font-size: 16px;
-        line-height: 22px;
+        line-height: 1.375em;
         color: #2B2B2B;
-        margin-top: 28px;
-        margin-bottom: 20px;
+        margin-top: 1.75em;
+        margin-bottom: 1.25em;
     }
 
     .no-data-placeholder {
@@ -116,16 +126,16 @@
             border-bottom: none;
             font-weight: 400;
             font-size: 14px;
-            line-height: 19px;
+            line-height: 1.36em;
             color: #2B2B2B;
-            padding: 12px 12px;
-            min-height: 48px;
+            padding: 0.857em 0.857em;
+            min-height: 3.43em;
         }
 
         .ant-table-tbody tr>:nth-child(2) a {
             font-weight: 600;
             font-size: 14px;
-            line-height: 19px;
+            line-height: 1.36em;
             color: #175BC0;
             cursor: pointer;
         }

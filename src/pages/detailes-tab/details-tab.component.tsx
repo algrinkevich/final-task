@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Tooltip } from "antd";
+import moment from "moment";
 
 import { ProteinResponse } from "../protein-page/protein-page.component";
 
@@ -22,14 +23,18 @@ const DetailsTab = ({ protein }: { protein: ProteinResponse | null }) => {
           </div>
           <div className="details-block">
             <span className="details-title">{"Mass (Da)"}</span>
-            <span className="details-value">{protein?.sequence.molWeight}</span>
+            <span className="details-value">
+              {protein?.sequence.molWeight.toLocaleString("en-US")}
+            </span>
           </div>
         </div>
         <div className="details-info-column">
           <div className="details-block">
             <span className="details-title">{"Last updated"}</span>
             <span className="details-value">
-              {protein?.entryAudit.lastSequenceUpdateDate}
+              {moment(protein?.entryAudit.lastSequenceUpdateDate).format(
+                "MMMM DD YYYY"
+              )}
             </span>
           </div>
           <div className="details-block">

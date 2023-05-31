@@ -34,6 +34,7 @@ import {
 import { AppDispatch } from "../../store/store";
 
 import { ReactComponent as FiltersIcon } from "../../assets/filters.svg";
+import { ReactComponent as IndicatorIcon } from "../../assets/indicator.svg";
 
 import "./search-page.style.scss";
 
@@ -300,6 +301,9 @@ const SearchPage = () => {
           type="button"
         >
           <FiltersIcon />
+          {/* <div className="filters-btn-container">
+            {filters && <IndicatorIcon className="filters-indicator" />}
+          </div> */}
         </Button>
       </form>
 
