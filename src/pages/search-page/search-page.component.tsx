@@ -49,6 +49,7 @@ const SearchPage = () => {
   const isSearchRunning = useSelector(selectIsSearchRunning);
   const sorting = useSelector(selectSorting);
   const totalItems = useSelector(selectTotal);
+  const enableInfiniteScroll = !isSearchRunning && items.length < totalItems;
 
   useEffect(() => {
     dispatch(setSearchQuery(searchParams.get("query") || ""));
@@ -336,7 +337,7 @@ const SearchPage = () => {
               );
             }}
           />
-          {!isSearchRunning && (
+          {enableInfiniteScroll && (
             <InfiniteScroll
               loadMore={() => dispatch(fetchNextItems())}
               reset={resetScroll}
