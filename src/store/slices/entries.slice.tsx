@@ -1,7 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import isEqual from "lodash/isEqual";
 
-import { SearchParams, UniprotService } from "../../api/uniprot-service";
+import {
+  SearchParams,
+  UniProtSearchResponse,
+  UniprotService,
+} from "../../api/uniprot-service";
 import { RootState } from "../store";
 
 export interface SearchItem {
@@ -19,25 +23,7 @@ interface EntriesState {
   search: SearchParams;
   nextPageLink: string | null;
   isSearchRunning: boolean;
-}
-
-interface UniProtSearchResponse {
-  results: {
-    primaryAccession: string;
-    uniProtkbId: string;
-    organism: {
-      scientificName: string;
-    };
-    genes: {
-      geneName: { value: string };
-    }[];
-    comments: {
-      subcellularLocations: {
-        location: { value: string };
-      }[];
-    }[];
-    sequence: { length: number };
-  }[];
+  total: number;
 }
 
 const INITIAL_STATE: EntriesState = {
@@ -45,6 +31,7 @@ const INITIAL_STATE: EntriesState = {
   search: { query: "" },
   nextPageLink: null,
   isSearchRunning: false,
+  total: 0,
 };
 
 const searchResultsToStateItems = (searchResults: UniProtSearchResponse) => {
@@ -129,7 +116,10 @@ export const entriesSlice = createSlice({
             ...searchResultsToStateItems(action.payload.searchResults),
           ].map((item, index) => ({ ...item, index }));
         }
-      );
+      )
+      .addCase(countItems.fulfilled, (state, action) => {
+        state.total = action.payload;
+      });
   },
 });
 
@@ -159,6 +149,22 @@ export const fetchNextItems = createAsyncThunk(
   }
 );
 
+export const countItems = createAsyncThunk(
+  "entries/countItems",
+  async (args: SearchParams) => {
+    const service = new UniprotService();
+
+    const facetResponse = await service.getFacetsAsync({
+      searchParams: args,
+      facetName: "reviewed",
+    });
+
+    return (
+      facetResponse?.facets[0].values.reduce((acc, v) => acc + v.count, 0) || 0
+    );
+  }
+);
+
 export const { setSearchQuery, setFilters, setSorting } = entriesSlice.actions;
 
 export const selectItems = (state: RootState) => state.entries.items;
@@ -168,5 +174,6 @@ export const selectFilters = (state: RootState) => state.entries.search.filters;
 export const selectIsSearchRunning = (state: RootState) =>
   state.entries.isSearchRunning;
 export const selectSorting = (state: RootState) => state.entries.search.sort;
+export const selectTotal = (state: RootState) => state.entries.total;
 
 export const entriesReducer = entriesSlice.reducer;

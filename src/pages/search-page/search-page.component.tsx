@@ -17,6 +17,7 @@ import InfiniteScroll from "../../components/infinite-scroll/infinite-scroll.com
 import SortIcon from "../../components/sort-icon/sort-icon-component";
 import Tag from "../../components/tag/tag.component";
 import {
+  countItems,
   fetchItems,
   fetchNextItems,
   SearchItem,
@@ -25,6 +26,7 @@ import {
   selectItems,
   selectSearchQuery,
   selectSorting,
+  selectTotal,
   setFilters,
   setSearchQuery,
   setSorting,
@@ -46,7 +48,7 @@ const SearchPage = () => {
   const filters = useSelector(selectFilters);
   const isSearchRunning = useSelector(selectIsSearchRunning);
   const sorting = useSelector(selectSorting);
-  //const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const totalItems = useSelector(selectTotal);
 
   useEffect(() => {
     dispatch(setSearchQuery(searchParams.get("query") || ""));
@@ -88,6 +90,7 @@ const SearchPage = () => {
     }
 
     dispatch(fetchItems({ query: searchQuery, filters, sort: sorting }));
+    dispatch(countItems({ query: searchQuery, filters, sort: sorting }));
     setResetScroll(true);
   }, [searchQuery, dispatch, filters, sorting]);
 
@@ -133,15 +136,15 @@ const SearchPage = () => {
   );
 
   const showSearchResultsTitle = () => {
-    if (items.length > 0 && searchQuery === "*") {
+    if (totalItems > 0 && searchQuery === "*") {
       return (
-        <p className="results-title">{`${items.length} Search Results for "All"`}</p>
+        <p className="results-title">{`${totalItems} Search Results for "All"`}</p>
       );
-    } else if (items.length > 0 && searchQuery) {
+    } else if (totalItems > 0 && searchQuery) {
       return (
-        <p className="results-title">{`${items.length} Search Results for "${searchQuery}"`}</p>
+        <p className="results-title">{`${totalItems} Search Results for "${searchQuery}"`}</p>
       );
-    } else if (items.length === 0 && searchQuery) {
+    } else if (totalItems === 0 && searchQuery) {
       return (
         <p className="results-title">{`0 Search Results for "${searchQuery}"`}</p>
       );
@@ -333,10 +336,12 @@ const SearchPage = () => {
               );
             }}
           />
-          <InfiniteScroll
-            loadMore={() => dispatch(fetchNextItems())}
-            reset={resetScroll}
-          />
+          {!isSearchRunning && (
+            <InfiniteScroll
+              loadMore={() => dispatch(fetchNextItems())}
+              reset={resetScroll}
+            />
+          )}
         </Fragment>
       ) : (
         <p className="no-data-placeholder">

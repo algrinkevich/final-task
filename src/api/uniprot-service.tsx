@@ -16,6 +16,38 @@ export interface SearchParams {
   };
 }
 
+interface UniProtFacets {
+  name: string;
+  values: {
+    label: string;
+    value: string;
+    count: number;
+  }[];
+}
+export interface UniProtFacetsResponse {
+  facets: UniProtFacets[];
+}
+
+export interface UniProtSearchResponse {
+  facets?: UniProtFacets[];
+  results: {
+    primaryAccession: string;
+    uniProtkbId: string;
+    organism: {
+      scientificName: string;
+    };
+    genes: {
+      geneName: { value: string };
+    }[];
+    comments: {
+      subcellularLocations: {
+        location: { value: string };
+      }[];
+    }[];
+    sequence: { length: number };
+  }[];
+}
+
 export class UniprotService {
   getSearchUrl() {
     return "https://rest.uniprot.org/uniprotkb/search";
@@ -78,7 +110,7 @@ export class UniprotService {
     );
 
     const link = this.extractLinkFromResponse(response);
-    const data = await response.json();
+    const data: UniProtSearchResponse = await response.json();
 
     return { searchResults: data, nextPageLink: link };
   }
@@ -89,7 +121,7 @@ export class UniprotService {
   }: {
     facetName: string;
     searchParams: SearchParams;
-  }) {
+  }): Promise<UniProtFacetsResponse> {
     const filteredQuery = this.filtersToQueryString(searchParams);
 
     const response = await fetch(
