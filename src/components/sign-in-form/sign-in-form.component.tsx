@@ -128,16 +128,21 @@ const SignInForm = withFormik<SignInFormProps, SignInData>({
 
       switch (authError.code) {
         case "auth/wrong-password":
-          setFieldError("backendError", "Incorrect password for such email");
+          setFieldError(
+            "backendError",
+            "Login failed! Please, check you password and email and try again"
+          );
           setFieldError("password", " ");
+          setFieldError("email", " ");
           setSubmitting(false);
           break;
         case "auth/user-not-found":
           setFieldError(
             "backendError",
-            "No such user associated with this email"
+            "Login failed! Please, check you password and email and try again"
           );
           setFieldError("email", " ");
+          setFieldError("password", " ");
           setSubmitting(false);
           break;
         default:
