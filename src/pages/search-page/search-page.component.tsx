@@ -79,7 +79,7 @@ const SearchPage = () => {
     () => ({
       scroll: {
         x: true,
-        y: "74.5vh",
+        y: "74vh",
         scrollToFirstRowOnChange: true,
       },
     }),
@@ -315,7 +315,7 @@ const SearchPage = () => {
   } => {
     return {
       x: true,
-      y: "74.5vh",
+      y: "74vh",
       scrollToFirstRowOnChange: true,
     };
   }, []);
