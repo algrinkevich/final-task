@@ -55,6 +55,9 @@ export const entriesSlice = createSlice({
   name: "entries",
   initialState: INITIAL_STATE,
   reducers: {
+    resetState(state) {
+      Object.assign(state, INITIAL_STATE);
+    },
     setSearchQuery(state, action) {
       state.search.query = action.payload;
     },
@@ -167,7 +170,8 @@ export const countItems = createAsyncThunk(
   }
 );
 
-export const { setSearchQuery, setFilters, setSorting } = entriesSlice.actions;
+export const { setSearchQuery, setFilters, setSorting, resetState } =
+  entriesSlice.actions;
 
 export const selectItems = (state: RootState) => state.entries.items;
 export const selectSearchQuery = (state: RootState) =>

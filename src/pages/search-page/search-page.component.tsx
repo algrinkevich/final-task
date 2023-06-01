@@ -12,7 +12,6 @@ import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   FilterValue,
-  Key,
   SorterResult,
   TablePaginationConfig,
 } from "antd/es/table/interface";
