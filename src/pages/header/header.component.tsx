@@ -1,8 +1,10 @@
 import { Fragment, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 
+import { resetState } from "../../store/slices/entries.slice";
 import { selectCurrentUser } from "../../store/slices/user.slice";
+import { AppDispatch } from "../../store/store";
 import { signOutUserAsync } from "../../utils/firebase/firebase.utils";
 
 import "./header.styles.scss";
@@ -10,13 +12,15 @@ import "./header.styles.scss";
 const Header = () => {
   const currentUser = useSelector(selectCurrentUser);
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   const navigateToAuth = useCallback(() => navigate("/auth"), [navigate]);
 
   const handleSignOut = useCallback(async () => {
     await signOutUserAsync();
+    dispatch(resetState());
     navigate("/auth");
-  }, [navigate]);
+  }, [navigate, dispatch]);
 
   return (
     <Fragment>

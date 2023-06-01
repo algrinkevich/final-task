@@ -10,6 +10,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useSearchParams } from "react-router-dom";
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import {
+  FilterValue,
+  SorterResult,
+  TablePaginationConfig,
+} from "antd/es/table/interface";
 import { useVT } from "virtualizedtableforantd4";
 
 import Button, { ButtonType } from "../../components/button/button.component";
@@ -74,7 +79,7 @@ const SearchPage = () => {
     () => ({
       scroll: {
         x: true,
-        y: "calc(100vh - 16.5em)",
+        y: "74.5vh",
         scrollToFirstRowOnChange: true,
       },
     }),
@@ -178,16 +183,6 @@ const SearchPage = () => {
         <p className="results-title">{`${totalItems} Search Results for "${searchQuery}"`}</p>
       );
     }
-  };
-
-  const convertToSorting = (
-    fieldName: string,
-    direction: string | null | undefined
-  ) => {
-    return {
-      field: fieldName,
-      direction: direction === "descend" ? "desc" : "asc",
-    };
   };
 
   const getSortOrder = useCallback(
@@ -313,6 +308,48 @@ const SearchPage = () => {
   const hasFilters =
     Object.keys(filters ? removeEmpty(filters) : {}).length > 0;
 
+  const tableScrollConfig = useMemo((): {
+    x: true;
+    y: string;
+    scrollToFirstRowOnChange: true;
+  } => {
+    return {
+      x: true,
+      y: "74.5vh",
+      scrollToFirstRowOnChange: true,
+    };
+  }, []);
+
+  const handleSorting = useCallback(
+    (
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      _: TablePaginationConfig,
+      __: Record<string, FilterValue | null>,
+      sorter: SorterResult<SearchItem> | SorterResult<SearchItem>[]
+    ) => {
+      sorter = sorter as SorterResult<SearchItem>;
+
+      const convertToSorting = (
+        fieldName: string,
+        direction: string | null | undefined
+      ) => {
+        return {
+          field: fieldName,
+          direction: direction === "descend" ? "desc" : "asc",
+        };
+      };
+
+      dispatch(
+        setSorting(
+          sorter.order
+            ? convertToSorting(sorter.field as string, sorter.order)
+            : null
+        )
+      );
+    },
+    [dispatch]
+  );
+
   return (
     <div className="search-page-container">
       <form className="search-page-form" onSubmit={onSearch}>
@@ -351,26 +388,11 @@ const SearchPage = () => {
             columns={columns}
             dataSource={items}
             className="table-container"
-            scroll={{
-              x: true,
-              y: "calc(100vh - 16.5em)",
-              scrollToFirstRowOnChange: true,
-            }}
+            scroll={tableScrollConfig}
             pagination={false}
             loading={isSearchRunning}
             rowKey="index"
-            onChange={(_, __, sorter) => {
-              dispatch(
-                setSorting(
-                  (sorter as { order: string | undefined }).order
-                    ? convertToSorting(
-                        (sorter as { field: string }).field,
-                        (sorter as { order: string }).order
-                      )
-                    : null
-                )
-              );
-            }}
+            onChange={handleSorting}
           />
           {enableInfiniteScroll && (
             <InfiniteScroll

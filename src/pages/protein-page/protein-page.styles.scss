@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
 
 .protein-page-container {
-    padding: 1.875em 8.125em 0 8.125em;
+    padding: 3.13vh 10.08vw 0 10.16vw;
 
     .title-container {
         display: flex;
@@ -11,8 +11,8 @@
         .protein-title {
             margin: 0;
             font-weight: 600;
-            font-size: 22px;
-            line-height: 30px;
+            font-size: 1.375rem;
+            line-height: 1.364em;
             color: #000000;
             margin-right: 0.6em;
         }
@@ -30,14 +30,14 @@
 
             .info-title {
                 font-weight: 600;
-                font-size: 12px;
+                font-size: 0.75rem;
                 line-height: 1.33em;
                 color: #616161;
             }
 
             .info-description {
                 font-weight: 400;
-                font-size: 12px;
+                font-size: 0.75rem;
                 line-height: 1.33em;
                 color: #2B2B2B;
             }
@@ -59,6 +59,7 @@
         color: #9f9f9f !important;
         font-family: 'Inter', sans-serif;
         font-weight: 500;
+        font-size: 0.875rem;
     }
 
     .ant-tabs-tab {

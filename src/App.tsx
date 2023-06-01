@@ -38,7 +38,8 @@ const App = () => {
       } else if (
         !user &&
         location.pathname !== "/" &&
-        location.pathname !== "/not-found"
+        location.pathname !== "/not-found" &&
+        location.pathname !== "/auth"
       ) {
         navigate("/auth");
       }

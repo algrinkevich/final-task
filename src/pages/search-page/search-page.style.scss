@@ -1,5 +1,5 @@
 .search-page-container {
-    padding: 1.875em 8.125em 0 8.0625em;
+    padding: 3.13vh 10.08vw 0 10.16vw;
     height: calc(100% - 3em);
     position: relative;
 
@@ -8,13 +8,13 @@
         flex-direction: row;
 
         .input-search {
-            height: 2.5rem;
+            height: 2.8572em;
             border: 1px solid #D9D9D9;
-            border-radius: 8px;
+            border-radius: 0.57em;
             width: 100%;
             font-family: inherit;
             font-weight: 400;
-            font-size: 14px;
+            font-size: 0.875rem;
             line-height: 1.357em;
             color: #2B2B2B;
             padding-left: 1.143em;
@@ -36,7 +36,7 @@
             justify-content: center;
             align-items: center;
             width: 12.7857em;
-            height: 2.5rem;
+            height: 2.8572em;
             margin-left: 0.643em;
             margin-right: 0.929em;
         }
@@ -48,13 +48,15 @@
                 position: absolute;
                 top: -1.8em;
                 right: -0.4em;
+                width: 0.857em;
+                height: 0.857em;
             }
         }
     }
 
     .results-title {
         font-weight: 600;
-        font-size: 16px;
+        font-size: 1rem;
         line-height: 1.375em;
         color: #2B2B2B;
         margin-top: 1.75em;
@@ -68,7 +70,7 @@
         transform: translate(-50%, -50%);
         margin: 0;
         font-weight: 400;
-        font-size: 14px;
+        font-size: 0.875rem;
         line-height: 1.357em;
         color: #616161;
         text-align: center;
@@ -79,23 +81,23 @@
             font-family: 'Open Sans', sans-serif;
             background-color: #f5f5f5;
             border-bottom: none;
-            height: 40px;
+            height: 3.333em;
             font-weight: 600;
-            font-size: 12px;
-            line-height: 16px;
+            font-size: 0.75rem;
+            line-height: 1.33em;
             color: #000000;
             border-left: 2px solid #FFFFFF;
-            padding: 2px 12px;
+            padding: 0.17em 1em;
         }
 
         .ant-table-thead th:first-child {
-            border-top-left-radius: 8px;
-            border-bottom-left-radius: 8px;
+            border-top-left-radius: 0.67em;
+            border-bottom-left-radius: 0.67em;
         }
 
         .ant-table-thead th:last-child {
-            border-top-right-radius: 8px;
-            border-bottom-right-radius: 8px;
+            border-top-right-radius: 0.67em;
+            border-bottom-right-radius: 0.67em;
         }
 
         .ant-table-column-sorter {
@@ -106,6 +108,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+
+            svg{
+                width: 2em;
+                height: 2em;
+            }
 
             .sort-icon-active {
                 fill: #3C86F4;
@@ -125,7 +132,7 @@
         .ant-table-tbody td {
             border-bottom: none;
             font-weight: 400;
-            font-size: 14px;
+            font-size: 0.875rem;
             line-height: 1.36em;
             color: #2B2B2B;
             padding: 0.857em 0.857em;
@@ -134,7 +141,7 @@
 
         .ant-table-tbody tr>:nth-child(2) a {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 0.875rem;
             line-height: 1.36em;
             color: #175BC0;
             cursor: pointer;
