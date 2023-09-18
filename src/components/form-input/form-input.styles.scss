@@ -1,0 +1,37 @@
+.input-title {
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.36em;
+    color: #2B2B2B;
+    margin-left: 0.143em;
+}
+
+.input-field {
+    background: #F5F5F5;
+    border-radius: 8px;
+    color: #2B2B2B;
+    font-weight: 400;
+    font-size: 0.875rem;
+    line-height: 1.36em;
+    padding: 1.07em 1em 1em 1em;
+    outline: none;
+    border: 2px solid transparent;
+    font-family: inherit;
+    margin-bottom: 0.29em;
+
+    &::placeholder {
+        font-family: inherit;
+        color: #6C6C6C;
+    }
+
+    &:not(:placeholder-shown) {
+        background-color: #ffffff;
+        border: 1px solid #9F9F9F;
+    }
+
+    &:focus {
+        border: 2px solid #3C86F4;
+        background-color: #ffffff;
+    }  
+}

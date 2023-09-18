@@ -1,0 +1,93 @@
+.publications-tab-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.072em;
+
+    .publication-container {
+        font-size:  1rem;
+        background: #F5F6F8;
+        border-radius: 1em;
+        padding: 0.875em 1.375em 0.625em 1.438em;
+        font-family: 'Open Sans', sans-serif;
+        width: 79%;
+
+        h2 {
+            margin: 0 0 0.375em 0;
+            font-weight: 600;
+            font-size: 1rem;
+            line-height: 1.375em;
+            color: #2B2B2B;
+        }
+
+        .authors-names {
+            margin: 0 0 1.29em 0;
+            font-weight: 400;
+            font-size: 0.875rem;
+            line-height: 1.36em;
+            text-decoration-line: underline;
+            color: #2B2B2B;
+
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            display: -webkit-box;
+        }
+
+        .categories {
+            margin: 0 0 0.43em 0;
+            font-weight: 400;
+            font-size: 0.875rem;
+            line-height: 1.36em;
+            color: #2B2B2B;
+        }
+
+        .column-values {
+            margin: 0 0 0.43em 0;
+            font-weight: 400;
+            font-size: 0.875rem;
+            line-height: 1.36em;
+            color: #000000;
+        }
+
+        .column-title {
+            font-weight: 600;
+            color: #6C6C6C;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: row;
+            gap: 0.5625em;
+            margin-top: 0.625em;
+
+            .external-btn {
+                color: #3C86F4;
+                border: 1px solid #3C86F4;
+                font-weight: 600;
+                border-radius: 0.33em;
+                font-size: 0.75rem;
+                line-height: 1.33em;
+                cursor: pointer;
+
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.25em 0.75em;
+                gap: 0.67em;
+            }
+
+            .external-btn--disabled {
+                border: 1px solid #9F9F9F;
+                color: #9F9F9F;
+                cursor: not-allowed;
+
+                svg {
+                    fill: #9F9F9F;
+                }
+            }
+        }
+    }
+    .publication-container:last-child {
+        margin-bottom: 0.9375em;
+    }
+}

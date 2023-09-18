@@ -1,0 +1,36 @@
+.not-found-page-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+
+    h1 {
+        font-size: 4.5rem;
+        font-weight: 600;
+        line-height: 1.36em;
+        color: #000000;
+        margin: 0;
+    }
+    .title {
+        display: block;
+        font-size: 1rem;
+        line-height: 1.375em;
+        font-weight: 600;
+        color: #9F9F9F;
+        margin-bottom: 1.1875em;
+    }
+    .not-found-btn {
+        width: 13.17em;
+        height: 4em;
+        border-radius: 2em;
+        font-weight: 700;
+        font-size: 0.75rem;
+        line-height: 1.33em;
+        color: #000000;
+
+        &:hover {
+            color: #fff;
+        }
+    }
+}
