@@ -22,3 +22,11 @@ declare module "protvista-uniprot" {
   const ProtVistaUniprot: CustomElement = protvista;
   export default ProtVistaUniprot;
 }
+
+declare module "mailchecker/platform/node" {
+  import MailChecker from "mailchecker/platform/node";
+  const mailChecker: {
+    isValid: (string) => boolean;
+  } = MailChecker;
+  export default mailChecker;
+}
