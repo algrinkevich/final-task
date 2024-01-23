@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { AuthError } from "firebase/auth";
 import { FormikErrors, FormikTouched, withFormik } from "formik";
+import MailChecker from "mailchecker/platform/node";
 
 import BaseAuthenticationForm from "../../components/base-authentication-form/base-authentication-form.component";
 import Button, { ButtonType } from "../../components/button/button.component";
@@ -132,10 +133,8 @@ export function validateEmail(value: string) {
 
   if (!value) {
     error = "The field is required";
-  } else if (!/^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,4}$/i.test(value)) {
+  } else if (!MailChecker.isValid(value)) {
     error = "Invalid email address";
-  } else if (value.length >= 128) {
-    error = "The email is too long";
   }
 
   return error;
