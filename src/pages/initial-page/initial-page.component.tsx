@@ -15,10 +15,11 @@ const InitialPage = () => {
   return (
     <StartPageBackground>
       <div className="initial-page-container">
-        <h1 className="title">{"Q-1 Search"}</h1>
+        <h1 className="title">{"Uniprot Search"}</h1>
         <p className="description">
-          {"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do"}
-          {"eiusmod tempor incididunt u"}
+          {
+            "Find your protein in UniProt Knowledgebase with lighweighted search"
+          }
         </p>
         <Button
           buttonType={ButtonType.INITIAL_WHITE}
